@@ -106,7 +106,7 @@ function ClassList() {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_DB_LINK}/classes`);
+        const response = await fetch(`${import.meta.env.VITE_DB_LINK}/groups`);
         const data = await response.json();
 
         console.log("Fetched classes:", data);
@@ -170,13 +170,13 @@ function ClassList() {
               <Users className="w-12 h-12 text-gray-400" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No Groups Yet
+              No Classes
             </h3>
             <p className="text-gray-600 mb-6">
-              Create your first study group to get started
+              Create a class
             </p>
             <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300">
-              Create Your First Group
+              Create Class
             </button>
           </div>
         ) : (
@@ -184,29 +184,19 @@ function ClassList() {
             {classes.map((classItem) => (
               <div
                 key={classItem.id}
-                onClick={() => navigate(`/class/${classItem.id}`)}
+                onClick={() => navigate(`/groups/${classItem.id}`)}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group cursor-pointer"
               >
-                {/* <div className={`h-2 bg-gradient-to-r ${classItem.color}`}></div> */}
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors duration-300">
-                        {classItem.name}
+                        {classItem.groupName}
                       </h3>
-                      {/* <span className="inline-block bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
-                        {classItem.subject}
-                      </span> */}
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center text-gray-500">
-                      <Users className="w-4 h-4 mr-2" />
-                      <span className="text-sm">
-                        {classItem.students.length} students
-                      </span>
-                    </div>
                     <button className="text-purple-600 hover:text-purple-700 font-medium text-sm transition-colors duration-300">
                       View →
                     </button>
