@@ -50,4 +50,4 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 
-module.exports = mongoose.model('User', userSchema); // Changed 'Users' to 'User' by convention
+module.exports = mongoose.model('User', userSchema); 
