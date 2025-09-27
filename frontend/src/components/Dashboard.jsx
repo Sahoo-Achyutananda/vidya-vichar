@@ -59,6 +59,23 @@ function HeroSection() {
   );
 }
 
+function ClassNav() {
+  const activeNavStyle =
+    "text-white bg-fuchsia-600 border-1 font-semibold py-2 px-4 rounded-lg cursor-pointer hover:bg-fuchsia-700";
+  const navStyle =
+    "text-gray-900 border-1 font-semibold py-2 px-4 rounded-lg cursor-pointer bg-white hover:bg-fuchsia-600 hover:text-white";
+  return (
+    <>
+      <div className="max-w-6xl mx-auto py-6 flex gap-[15px] items-center">
+        <div className={activeNavStyle}>Active Classes</div>
+        <div className={navStyle}>Completed Classes</div>
+        <div className={navStyle}>Your Classes</div>
+        <div className={navStyle}>Joined Classes</div>
+      </div>
+    </>
+  );
+}
+
 function ClassList() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,7 +98,7 @@ function ClassList() {
     };
     fetchClasses();
   }, []);
-  
+
   // kankaalllll
   if (loading) {
     return (
@@ -100,14 +117,15 @@ function ClassList() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen py-12">
+    <div className="bg-gray-50 min-h-screen py-3">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="mb-8">
+        <ClassNav />
+        {/* <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Active Classes
           </h2>
           <p className="text-gray-600">Currently active study classes</p>
-        </div>
+        </div> */}
 
         {classes.length === 0 ? (
           <div className="text-center py-16">
