@@ -3,16 +3,18 @@ import Dashboard from "./components/Dashboard";
 import Navbar from "./components/Navbar";
 import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
+import ClassPage from "./components/ClassPage";
 
 function App() {
   return (
     <>
-      <Navbar />
       <BrowserRouter>
+        <Navbar />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/user/dashboard" element={<Dashboard />} />
+          <Route path="/class/:classId" element={<ClassPage />} />
           <Route
             path="*"
             element={

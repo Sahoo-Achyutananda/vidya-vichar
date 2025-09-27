@@ -6,7 +6,7 @@
       "email": "john@example.com",
       "password": "password123",
       "created_classes": [1, 3],
-      "joined_classes": [2]
+      "joined_classes": [2, 5]
     },
     {
       "id": 2,
@@ -14,7 +14,7 @@
       "email": "alice@example.com",
       "password": "password123",
       "created_classes": [2],
-      "joined_classes": [1, 3]
+      "joined_classes": [1, 3, 4]
     },
     {
       "id": 3,
@@ -22,7 +22,7 @@
       "email": "robert@example.com",
       "password": "password123",
       "created_classes": [],
-      "joined_classes": [1, 2]
+      "joined_classes": [1, 2, 4]
     },
     {
       "id": 4,
@@ -30,10 +30,25 @@
       "email": "emily@example.com",
       "password": "password123",
       "created_classes": [4],
-      "joined_classes": [1, 2, 3]
+      "joined_classes": [1, 2, 3, 5]
+    },
+    {
+      "id": 5,
+      "name": "Michael Lee",
+      "email": "michael@example.com",
+      "password": "password123",
+      "created_classes": [5],
+      "joined_classes": [2, 3]
+    },
+    {
+      "id": 6,
+      "name": "Sophia Davis",
+      "email": "sophia@example.com",
+      "password": "password123",
+      "created_classes": [],
+      "joined_classes": [1, 4, 5]
     }
   ],
-
   "classes": [
     {
       "id": 1,
@@ -42,7 +57,7 @@
       "teacher_id": 1,
       "teacher_name": "John Doe",
       "access_code": "SYS101",
-      "students": [2, 3, 4],
+      "students": [2, 3, 4, 6],
       "questions": [
         {
           "id": 1,
@@ -59,6 +74,14 @@
           "status": "open",
           "timestamp": "2025-09-27T10:05:00Z",
           "answers": []
+        },
+        {
+          "id": 3,
+          "text": "What is database sharding?",
+          "asked_by": 6,
+          "status": "important",
+          "timestamp": "2025-09-27T10:10:00Z",
+          "answers": []
         }
       ]
     },
@@ -69,7 +92,7 @@
       "teacher_id": 2,
       "teacher_name": "Alice Smith",
       "access_code": "OS2025",
-      "students": [1, 3, 4],
+      "students": [1, 3, 4, 5],
       "questions": [
         {
           "id": 1,
@@ -85,6 +108,14 @@
               "timestamp": "2025-09-27T11:05:00Z"
             }
           ]
+        },
+        {
+          "id": 2,
+          "text": "What is the difference between process and thread?",
+          "asked_by": 5,
+          "status": "open",
+          "timestamp": "2025-09-27T11:15:00Z",
+          "answers": []
         }
       ]
     },
@@ -95,8 +126,24 @@
       "teacher_id": 1,
       "teacher_name": "John Doe",
       "access_code": "DS300",
-      "students": [2, 4],
-      "questions": []
+      "students": [2, 4, 5],
+      "questions": [
+        {
+          "id": 1,
+          "text": "Explain the difference between stack and queue.",
+          "asked_by": 2,
+          "status": "answered",
+          "timestamp": "2025-09-27T12:00:00Z",
+          "answers": [
+            {
+              "id": 1,
+              "text": "Stack is LIFO, queue is FIFO.",
+              "answered_by": 1,
+              "timestamp": "2025-09-27T12:05:00Z"
+            }
+          ]
+        }
+      ]
     },
     {
       "id": 4,
@@ -105,7 +152,7 @@
       "teacher_id": 4,
       "teacher_name": "Emily Johnson",
       "access_code": "MATH101",
-      "students": [1, 2, 3],
+      "students": [1, 2, 3, 6],
       "questions": [
         {
           "id": 1,
@@ -121,6 +168,41 @@
               "timestamp": "2025-09-27T09:05:00Z"
             }
           ]
+        },
+        {
+          "id": 2,
+          "text": "What is the derivative of x^2?",
+          "asked_by": 6,
+          "status": "open",
+          "timestamp": "2025-09-27T09:30:00Z",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Web Development",
+      "status": "active",
+      "teacher_id": 5,
+      "teacher_name": "Michael Lee",
+      "access_code": "WEB101",
+      "students": [1, 2, 6],
+      "questions": [
+        {
+          "id": 1,
+          "text": "What is the difference between frontend and backend?",
+          "asked_by": 2,
+          "status": "open",
+          "timestamp": "2025-09-27T13:00:00Z",
+          "answers": []
+        },
+        {
+          "id": 2,
+          "text": "Explain REST API basics.",
+          "asked_by": 6,
+          "status": "important",
+          "timestamp": "2025-09-27T13:15:00Z",
+          "answers": []
         }
       ]
     }
