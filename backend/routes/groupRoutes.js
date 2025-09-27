@@ -6,10 +6,10 @@ const { createGroup, joinGroup, userGroups, getQuestion, postQuestion, updateQue
 
 router.post('/create',  createGroup);
 router.post('/join', joinGroup);
-router.get('/', userGroups);
+router.post('/', userGroups);
 
-router.get('/:groupid/questions', getQuestion);
-router.post('/:groupid/questions', postQuestion);
+router.get('/:groupid', getQuestion);
+router.post('/:groupid', postQuestion);
 router.put('/:groupid/questions/:questionid', updateQuestion);
 router.delete('/:groupid/questions/:questionid', deleteQuestion);
 

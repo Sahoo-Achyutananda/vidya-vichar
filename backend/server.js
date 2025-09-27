@@ -16,14 +16,13 @@ app.use(cors({
   credentials: true
 }));
 
-app.use('/api/users', userRoutes); // Changed from '/user' and fixed mounting
-app.use('/api/groups', require('./routes/groupRoutes')); // Changed from '/group' for clarity
+app.use('/api/users', userRoutes); 
+app.use('/api/groups', require('./routes/groupRoutes'));
 
 app.use('/', (req,res) =>{
     res.send("app is working!!!");
 })
 
-// Error Middleware
 app.use(notFound);
 app.use(errorHandler);
 
