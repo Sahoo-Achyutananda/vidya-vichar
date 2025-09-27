@@ -59,7 +59,7 @@ function HeroSection() {
   );
 }
 
-function ClassNav() {
+function ClassNav({ activeTab, setActiveTab }) {
   const activeNavStyle =
     "text-white bg-fuchsia-600 border-1 font-semibold py-2 px-4 rounded-lg cursor-pointer hover:bg-fuchsia-700";
   const navStyle =
@@ -67,10 +67,30 @@ function ClassNav() {
   return (
     <>
       <div className="max-w-6xl mx-auto py-6 flex gap-[15px] items-center">
-        <div className={activeNavStyle}>Active Classes</div>
-        <div className={navStyle}>Completed Classes</div>
-        <div className={navStyle}>Your Classes</div>
-        <div className={navStyle}>Joined Classes</div>
+        <div
+          className={activeTab === "active" ? activeNavStyle : navStyle}
+          onClick={() => setActiveTab("active")}
+        >
+          Active Classes
+        </div>
+        <div
+          className={activeTab === "completed" ? activeNavStyle : navStyle}
+          onClick={() => setActiveTab("completed")}
+        >
+          Completed Classes
+        </div>
+        <div
+          className={activeTab === "your" ? activeNavStyle : navStyle}
+          onClick={() => setActiveTab("your")}
+        >
+          Your Classes
+        </div>
+        <div
+          className={activeTab === "joined" ? activeNavStyle : navStyle}
+          onClick={() => setActiveTab("joined")}
+        >
+          Joined Classes
+        </div>
       </div>
     </>
   );
@@ -79,6 +99,7 @@ function ClassNav() {
 function ClassList() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("active");
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -97,7 +118,7 @@ function ClassList() {
       }
     };
     fetchClasses();
-  }, []);
+  }, [activeTab]);
 
   // kankaalllll
   if (loading) {
@@ -119,13 +140,27 @@ function ClassList() {
   return (
     <div className="bg-gray-50 min-h-screen py-3">
       <div className="max-w-6xl mx-auto px-6">
-        <ClassNav />
-        {/* <div className="mb-8">
+        <ClassNav activeTab={activeTab} setActiveTab={setActiveTab} />
+        <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Active Classes
+            {activeTab === "active"
+              ? "Active Classes"
+              : activeTab === "completed"
+              ? "Completed Classes"
+              : activeTab === "your"
+              ? "Your Classes"
+              : "Joined Classes"}
           </h2>
-          <p className="text-gray-600">Currently active study classes</p>
-        </div> */}
+          <p className="text-gray-600">
+            {activeTab === "active"
+              ? "Curently Live Classes"
+              : activeTab === "completed"
+              ? "Previously Completed Classes"
+              : activeTab === "your"
+              ? "Classes you created"
+              : "Classes you joined"}
+          </p>
+        </div>
 
         {classes.length === 0 ? (
           <div className="text-center py-16">
