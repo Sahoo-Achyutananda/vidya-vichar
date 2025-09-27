@@ -49,160 +49,139 @@
       "joined_classes": [1, 4, 5]
     }
   ],
-  "classes": [
+  "groups": [
     {
       "id": 1,
-      "name": "System Design 101",
-      "status": "active",
-      "teacher_id": 1,
-      "teacher_name": "John Doe",
-      "access_code": "SYS101",
-      "students": [2, 3, 4, 6],
+      "groupName": "System Design 101",
+      "faculty": "John Doe",
+      "accessCode": "SYS101",
+      "createdAt": "2025-09-27T10:00:00Z",
       "questions": [
         {
           "id": 1,
-          "text": "What is horizontal vs vertical scaling?",
-          "asked_by": 2,
-          "status": "open",
-          "timestamp": "2025-09-27T10:00:00Z",
-          "answers": []
+          "author": "Alice Smith",
+          "status": "unanswered",
+          "questionText": "What is horizontal vs vertical scaling?",
+          "questionTimestamp": "2025-09-27T10:05:00Z",
+          "answerText": "",
+          "answerTimestamp": null
         },
         {
           "id": 2,
-          "text": "Can caching introduce consistency issues?",
-          "asked_by": 3,
-          "status": "open",
-          "timestamp": "2025-09-27T10:05:00Z",
-          "answers": []
+          "author": "Robert Brown",
+          "status": "unanswered",
+          "questionText": "Can caching introduce consistency issues?",
+          "questionTimestamp": "2025-09-27T10:10:00Z",
+          "answerText": "",
+          "answerTimestamp": null
         },
         {
           "id": 3,
-          "text": "What is database sharding?",
-          "asked_by": 6,
+          "author": "Sophia Davis",
           "status": "important",
-          "timestamp": "2025-09-27T10:10:00Z",
-          "answers": []
+          "questionText": "What is database sharding?",
+          "questionTimestamp": "2025-09-27T10:15:00Z",
+          "answerText": "",
+          "answerTimestamp": null
         }
       ]
     },
     {
       "id": 2,
-      "name": "Operating Systems",
-      "status": "active",
-      "teacher_id": 2,
-      "teacher_name": "Alice Smith",
-      "access_code": "OS2025",
-      "students": [1, 3, 4, 5],
+      "groupName": "Operating Systems",
+      "faculty": "Alice Smith",
+      "accessCode": "OS2025",
+      "createdAt": "2025-09-27T11:00:00Z",
       "questions": [
         {
           "id": 1,
-          "text": "How does scheduling work in preemptive OS?",
-          "asked_by": 1,
+          "author": "John Doe",
           "status": "answered",
-          "timestamp": "2025-09-27T11:00:00Z",
-          "answers": [
-            {
-              "id": 1,
-              "text": "By using a scheduler that can interrupt processes.",
-              "answered_by": 2,
-              "timestamp": "2025-09-27T11:05:00Z"
-            }
-          ]
+          "questionText": "How does scheduling work in preemptive OS?",
+          "questionTimestamp": "2025-09-27T11:05:00Z",
+          "answerText": "By using a scheduler that can interrupt processes.",
+          "answerTimestamp": "2025-09-27T11:10:00Z"
         },
         {
           "id": 2,
-          "text": "What is the difference between process and thread?",
-          "asked_by": 5,
-          "status": "open",
-          "timestamp": "2025-09-27T11:15:00Z",
-          "answers": []
+          "author": "Michael Lee",
+          "status": "unanswered",
+          "questionText": "What is the difference between process and thread?",
+          "questionTimestamp": "2025-09-27T11:15:00Z",
+          "answerText": "",
+          "answerTimestamp": null
         }
       ]
     },
     {
       "id": 3,
-      "name": "Data Structures",
-      "status": "inactive",
-      "teacher_id": 1,
-      "teacher_name": "John Doe",
-      "access_code": "DS300",
-      "students": [2, 4, 5],
+      "groupName": "Data Structures",
+      "faculty": "John Doe",
+      "accessCode": "DS300",
+      "createdAt": "2025-09-27T12:00:00Z",
       "questions": [
         {
           "id": 1,
-          "text": "Explain the difference between stack and queue.",
-          "asked_by": 2,
+          "author": "Alice Smith",
           "status": "answered",
-          "timestamp": "2025-09-27T12:00:00Z",
-          "answers": [
-            {
-              "id": 1,
-              "text": "Stack is LIFO, queue is FIFO.",
-              "answered_by": 1,
-              "timestamp": "2025-09-27T12:05:00Z"
-            }
-          ]
+          "questionText": "Explain the difference between stack and queue.",
+          "questionTimestamp": "2025-09-27T12:05:00Z",
+          "answerText": "Stack is LIFO, queue is FIFO.",
+          "answerTimestamp": "2025-09-27T12:10:00Z"
         }
       ]
     },
     {
       "id": 4,
-      "name": "Math 101",
-      "status": "active",
-      "teacher_id": 4,
-      "teacher_name": "Emily Johnson",
-      "access_code": "MATH101",
-      "students": [1, 2, 3, 6],
+      "groupName": "Math 101",
+      "faculty": "Emily Johnson",
+      "accessCode": "MATH101",
+      "createdAt": "2025-09-27T09:00:00Z",
       "questions": [
         {
           "id": 1,
-          "text": "What is 2 + 2?",
-          "asked_by": 3,
+          "author": "Robert Brown",
           "status": "answered",
-          "timestamp": "2025-09-27T09:00:00Z",
-          "answers": [
-            {
-              "id": 1,
-              "text": "4",
-              "answered_by": 4,
-              "timestamp": "2025-09-27T09:05:00Z"
-            }
-          ]
+          "questionText": "What is 2 + 2?",
+          "questionTimestamp": "2025-09-27T09:05:00Z",
+          "answerText": "4",
+          "answerTimestamp": "2025-09-27T09:10:00Z"
         },
         {
           "id": 2,
-          "text": "What is the derivative of x^2?",
-          "asked_by": 6,
-          "status": "open",
-          "timestamp": "2025-09-27T09:30:00Z",
-          "answers": []
+          "author": "Sophia Davis",
+          "status": "unanswered",
+          "questionText": "What is the derivative of x^2?",
+          "questionTimestamp": "2025-09-27T09:30:00Z",
+          "answerText": "",
+          "answerTimestamp": null
         }
       ]
     },
     {
       "id": 5,
-      "name": "Web Development",
-      "status": "active",
-      "teacher_id": 5,
-      "teacher_name": "Michael Lee",
-      "access_code": "WEB101",
-      "students": [1, 2, 6],
+      "groupName": "Web Development",
+      "faculty": "Michael Lee",
+      "accessCode": "WEB101",
+      "createdAt": "2025-09-27T13:00:00Z",
       "questions": [
         {
           "id": 1,
-          "text": "What is the difference between frontend and backend?",
-          "asked_by": 2,
-          "status": "open",
-          "timestamp": "2025-09-27T13:00:00Z",
-          "answers": []
+          "author": "Alice Smith",
+          "status": "unanswered",
+          "questionText": "What is the difference between frontend and backend?",
+          "questionTimestamp": "2025-09-27T13:05:00Z",
+          "answerText": "",
+          "answerTimestamp": null
         },
         {
           "id": 2,
-          "text": "Explain REST API basics.",
-          "asked_by": 6,
+          "author": "Sophia Davis",
           "status": "important",
-          "timestamp": "2025-09-27T13:15:00Z",
-          "answers": []
+          "questionText": "Explain REST API basics.",
+          "questionTimestamp": "2025-09-27T13:15:00Z",
+          "answerText": "",
+          "answerTimestamp": null
         }
       ]
     }
