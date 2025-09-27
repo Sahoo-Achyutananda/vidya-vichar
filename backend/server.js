@@ -15,7 +15,7 @@ app.use(cors({
 }));
 
 // app.use('/user', require('./routes/userRoutes'));
-// app.use('/group', require('./routes/groupRoutes'));
+app.use('/group', require('./routes/groupRoutes'));
 
 app.use('/', (req,res) =>{
     res.send("app is working!!!");
