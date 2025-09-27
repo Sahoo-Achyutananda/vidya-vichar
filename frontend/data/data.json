@@ -1,0 +1,128 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john@example.com",
+      "password": "password123",
+      "created_classes": [1, 3],
+      "joined_classes": [2]
+    },
+    {
+      "id": 2,
+      "name": "Alice Smith",
+      "email": "alice@example.com",
+      "password": "password123",
+      "created_classes": [2],
+      "joined_classes": [1, 3]
+    },
+    {
+      "id": 3,
+      "name": "Robert Brown",
+      "email": "robert@example.com",
+      "password": "password123",
+      "created_classes": [],
+      "joined_classes": [1, 2]
+    },
+    {
+      "id": 4,
+      "name": "Emily Johnson",
+      "email": "emily@example.com",
+      "password": "password123",
+      "created_classes": [4],
+      "joined_classes": [1, 2, 3]
+    }
+  ],
+
+  "classes": [
+    {
+      "id": 1,
+      "name": "System Design 101",
+      "status": "active",
+      "teacher_id": 1,
+      "teacher_name": "John Doe",
+      "access_code": "SYS101",
+      "students": [2, 3, 4],
+      "questions": [
+        {
+          "id": 1,
+          "text": "What is horizontal vs vertical scaling?",
+          "asked_by": 2,
+          "status": "open",
+          "timestamp": "2025-09-27T10:00:00Z",
+          "answers": []
+        },
+        {
+          "id": 2,
+          "text": "Can caching introduce consistency issues?",
+          "asked_by": 3,
+          "status": "open",
+          "timestamp": "2025-09-27T10:05:00Z",
+          "answers": []
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Operating Systems",
+      "status": "active",
+      "teacher_id": 2,
+      "teacher_name": "Alice Smith",
+      "access_code": "OS2025",
+      "students": [1, 3, 4],
+      "questions": [
+        {
+          "id": 1,
+          "text": "How does scheduling work in preemptive OS?",
+          "asked_by": 1,
+          "status": "answered",
+          "timestamp": "2025-09-27T11:00:00Z",
+          "answers": [
+            {
+              "id": 1,
+              "text": "By using a scheduler that can interrupt processes.",
+              "answered_by": 2,
+              "timestamp": "2025-09-27T11:05:00Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Data Structures",
+      "status": "inactive",
+      "teacher_id": 1,
+      "teacher_name": "John Doe",
+      "access_code": "DS300",
+      "students": [2, 4],
+      "questions": []
+    },
+    {
+      "id": 4,
+      "name": "Math 101",
+      "status": "active",
+      "teacher_id": 4,
+      "teacher_name": "Emily Johnson",
+      "access_code": "MATH101",
+      "students": [1, 2, 3],
+      "questions": [
+        {
+          "id": 1,
+          "text": "What is 2 + 2?",
+          "asked_by": 3,
+          "status": "answered",
+          "timestamp": "2025-09-27T09:00:00Z",
+          "answers": [
+            {
+              "id": 1,
+              "text": "4",
+              "answered_by": 4,
+              "timestamp": "2025-09-27T09:05:00Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
