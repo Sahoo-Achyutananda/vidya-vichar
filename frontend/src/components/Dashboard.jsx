@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus, Users, Search } from "lucide-react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function HeroSection() {
   const [joinCode, setJoinCode] = useState("");
@@ -100,6 +101,7 @@ function ClassList() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("active");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -182,6 +184,7 @@ function ClassList() {
             {classes.map((classItem) => (
               <div
                 key={classItem.id}
+                onClick={() => navigate(`/class/${classItem.id}`)}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden group cursor-pointer"
               >
                 {/* <div className={`h-2 bg-gradient-to-r ${classItem.color}`}></div> */}

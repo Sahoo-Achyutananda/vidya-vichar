@@ -12,12 +12,10 @@ const questionSchema = new mongoose.Schema({
   },
   questionText: {
     type: String,
-    required: true
   },
   questionTimestamp: {
     type: Date,
-    default: Date.now,
-    required: true
+    default: Date.now
   },
   answerText: {
     type: String,
@@ -34,7 +32,7 @@ const groupSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  Faculty: {
+  faculty: {
     type: String,
     required: true
   },
@@ -50,4 +48,4 @@ const groupSchema = new mongoose.Schema({
   questions : [questionSchema]
 });
 
-module.exports = mongoose.model('Group', groupSchema);
+module.exports = mongoose.model('Groups', groupSchema);
