@@ -1,14 +1,22 @@
-import {BrowserRouter, Routes, Route} from "react-router-dom"
-import Dashboard from "./components/Dashboard"
-function App() {
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Dashboard from "./components/Dashboard";
+import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SignupPage";
 
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/user/dashboard" element={<Dashboard/>}/>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/user/dashboard" element={<Dashboard />} />
+        <Route
+          path="*"
+          element={<p className="text-center mt-20 text-red-600">Page not found</p>}
+        />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
