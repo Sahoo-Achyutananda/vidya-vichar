@@ -1,100 +1,57 @@
-const asyncHandler = require('express-async-handler');
-const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const Users = require('../models/userModel'); 
 
-// Helper function to generate a JWT
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '30d', // Token expires in 30 days
-    });
+const generateToken = (user) => {
+  return jwt.sign(
+    { id: user._id, username: user.username, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '30d' }
+  );
 };
 
-/**
- * @desc    Register a new user
- * @route   POST /api/users/register
- * @access  Public
- */
-const registerUser = asyncHandler(async (req, res) => {
+const registerUser = async (req, res) => {
+  try {
     const { username, email, password } = req.body;
-
-    // Validation
     if (!username || !email || !password) {
-        res.status(400);
-        throw new Error('Please enter all required fields');
+      return res.status(400).json({ message: "All fields are required" });
     }
-
-    // Check if user already exists
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-        res.status(400);
-        throw new Error('User already exists');
+    const existingUser = await Users.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
     }
-
-    // Create user (Password will be hashed by the model's pre-save middleware)
-    const user = await User.create({
-        username,
-        email,
-        password,
-    });
-
-    if (user) {
-        res.status(201).json({
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            token: generateToken(user._id), // Generate and send JWT
-        });
-    } else {
-        res.status(400);
-        throw new Error('Invalid user data');
-    }
-});
-
-/**
- * @desc    Authenticate a user & get token
- * @route   POST /api/users/login
- * @access  Public
- */
-const authUser = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
-
-    // Find the user by email
-    const user = await User.findOne({ email });
-
-    // Check if user exists AND if the password matches (using the model method)
-    if (user && (await user.matchPassword(password))) {
-        res.json({
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            token: generateToken(user._id), // Generate and send JWT
-        });
-    } else {
-        res.status(401); // Unauthorized
-        throw new Error('Invalid email or password');
-    }
-});
-
-// A simple example for a protected route to check user profile
-/**
- * @desc    Get user profile (example of a protected route)
- * @route   GET /api/users/profile
- * @access  Private
- */
-const getUserProfile = asyncHandler(async (req, res) => {
-    // req.user is available because of the 'protect' middleware!
-    res.json({
-        _id: req.user._id,
-        username: req.user.username,
-        email: req.user.email,
-        created_classes: req.user.created_classes,
-        joined_classes: req.user.joined_classes,
-    });
-});
-
-module.exports = {
-    registerUser,
-    authUser,
-    getUserProfile
+    const newUser = await Users.create({ username, email, password });
+    const token  = generateToken(newUser);
+      res.cookie('token',token,{
+        httpOnly : true,
+        sameSite: 'Lax',
+        secure: false
+      });
+    res.status(201).json({message: "User registered successfully"});
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 };
+
+const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required" });
+    }
+    const user = await Users.findOne({ email });
+    if (!user || user.password !== password) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+    const token  = generateToken(user);
+      res.cookie('token',token,{
+        httpOnly : true,
+        sameSite: 'Lax',
+        secure: false
+      });
+    res.status(201).json({message: "Login user successfully"});
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+module.exports = { registerUser, loginUser };

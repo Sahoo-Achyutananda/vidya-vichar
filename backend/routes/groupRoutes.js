@@ -1,16 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/protect');
 const { createGroup, joinGroup, userGroups, getQuestion, postQuestion, updateQuestion, deleteQuestion } = require('../controllers/groupController');
+const verifyUser = require('../middleware/authMiddleware');
 
+router.post('/create', verifyUser, createGroup);
+router.post('/join', verifyUser, joinGroup);
+router.get('/', verifyUser, userGroups);
 
-router.post('/create',  createGroup);
-router.post('/join', joinGroup);
-router.post('/', userGroups);
-
-router.get('/:groupid', getQuestion);
-router.post('/:groupid', postQuestion);
-router.put('/:groupid/questions/:questionid', updateQuestion);
-router.delete('/:groupid/questions/:questionid', deleteQuestion);
+router.get('/:groupid', verifyUser, getQuestion);
+router.post('/:groupid', verifyUser, postQuestion);
+router.put('/:groupid/questions/:questionid', verifyUser, updateQuestion);
+router.delete('/:groupid/questions/:questionid', verifyUser, deleteQuestion);
 
 module.exports = router;

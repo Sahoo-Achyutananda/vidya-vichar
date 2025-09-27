@@ -2,12 +2,14 @@ const Groups = require("../models/groupModel");
 const Users = require('../models/userModel');
 
 const createGroup = async (req,res) => {
-    const {groupname,username} = req.body;
+    const {groupname} = req.body;
+    const username = req.user.username;
     if(!groupname || !username || !username.trim() || !groupname.trim() ){
         return res.status(401).json({ message: 'both fields are required' });
     }
+    let data
     try{
-        const data = await Groups.findOne({
+        data = await Groups.findOne({
             groupName : groupname
         });
     }catch(err){
@@ -41,12 +43,14 @@ const createGroup = async (req,res) => {
 }
 
 const joinGroup = async (req,res) => {
-    const {username,groupname,accesscode} = req.body;
+    const {groupname,accesscode} = req.body;
+    const username = req.user.username;
     if(!groupname || !username || !username.trim() || !groupname.trim() || !accesscode || !accesscode.trim() ){
         return res.status(401).json({ message: 'All fields are required' });
     }
+    let data;
     try{
-        const data = await Groups.findOne({
+        data = await Groups.findOne({
             groupName : groupname
         });
     }catch(err){
@@ -75,12 +79,10 @@ const joinGroup = async (req,res) => {
 
 const userGroups = async (req,res) => {
     try{
-        const {username} = req.body;
-        if(!username || !username.trim() ){
-            return res.status(401).json({ message: 'field are required' });
-        }
+        const user = req.user;
+        // console.log(user.username);
         const data = await Users.findOne({
-            username : username
+            username : user.username
         });
         if(!data){
             return res.status(401).json({ message: 'username doesnot exists' });
@@ -103,6 +105,11 @@ const getQuestion = async (req,res) => {
         if(!data){
             return res.status(401).json({ message: 'invalid group id' });
         }
+        const user = await Users.findOne({ username: req.user.username });
+        const isMember = user.created_classes.includes(data.groupName) || user.joined_classes.includes(data.groupName);
+        if (!isMember) {
+            return res.status(403).json({ message: 'You are not part of this group' });
+        }
         res.status(200).json({
             groupName : data.groupName,
             faculty : data.faculty,
@@ -123,11 +130,17 @@ const postQuestion = async (req,res) => {
         if(!data){
             return res.status(401).json({ message: 'invalid group id' });
         }
-        const {question,author} = req.body;
+        const {question} = req.body;
+        const author = req.user.username;
         if(!question || !author || !question.trim() || !author.trim()){
             return res.status(401).json({ message: 'both fields are required' });
         }
         // console.log(data.faculty);
+        const user = await Users.findOne({ username: author });
+        const isMember = user.created_classes.includes(data.groupName) || user.joined_classes.includes(data.groupName);
+        if (!isMember) {
+            return res.status(403).json({ message: 'You are not part of this group' });
+        }
         const newQuestion = {
             author : author.trim(),
             questionText : question.trim(),
@@ -156,24 +169,30 @@ const updateQuestion = async (req,res) => {
         if(!status){
             return res.status(401).json({ message: 'field are required' });
         }
-        const updatefield = {};
-        if(answer.length===0){
-            updatefield["questions.$.status"] = status;
+        const user = await Users.findOne({ username: req.user.username });
+        const isMember = user.created_classes.includes(data.groupName) || user.joined_classes.includes(data.groupName);
+        if (!isMember) {
+            return res.status(403).json({ message: 'You are not part of this group' });
         }
-        else{
-            updatefield["questions.$.answerText"] = answer;
-            updatefield["questions.$.status"] = "answered";
-            updatefield["questions.$.answerTimestamp"] = Date.now();
-        }
-        const update = await Groups.findOneAndUpdate(
-            {_id : groupid, "questions._id" : questionid},
-            { $set: updatefield },
-            { new: true }
-        );
-        if(!update){
-            return res.status(404).json({ message: "Question not found" });
-        }
-        else return res.status(201).json({ message: "Question updated succesfully" });
+        const updatefield = {"questions.$.status": status};
+        if (answer !== undefined && answer.trim() !== "") {
+updatefield["questions.$.answerText"] = answer;
+    updatefield["questions.$.answerTimestamp"] = new Date();
+    updatefield["questions.$.status"] = "answered"; // override status if answer is provided
+}
+
+const update = await Groups.findOneAndUpdate(
+    { _id: groupid, "questions._id": questionid, "faculty": req.user.username },
+    { $set: updatefield },
+    { new: true }
+);
+
+if (!update) {
+    return res.status(404).json({ message: "Question not found" });
+} else {
+    return res.status(201).json({ message: "Question updated successfully" });
+}
+
     }catch(err){
         return res.status(401).json({ message: 'server error' });
     }
@@ -188,8 +207,11 @@ const deleteQuestion = async (req,res) => {
         if(!data){
             return res.status(401).json({ message: 'invalid group id' });
         }
+        if(data.faculty!==req.user.username){
+            return res.status(403).json({ message: 'Only faculty can delete questions' });
+        }
         const update = await Groups.findByIdAndUpdate(
-            {_id : groupid},
+            groupid,
             { $pull: { questions: { _id: questionid } } },
             { new: true }
         );
