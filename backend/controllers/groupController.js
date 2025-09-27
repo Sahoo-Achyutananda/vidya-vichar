@@ -10,19 +10,19 @@ const userGroups = async (req,res) => {
     
 }
 
-const getQuestion = (req,res) => {
+const getQuestion = async (req,res) => {
     
 }
 
-const postQuestion = (req,res) => {
+const postQuestion = async (req,res) => {
     
 }
 
-const updateQuestion = (req,res) => {
+const updateQuestion = async (req,res) => {
     
 }
 
-const deleteQuestion = (req,res) => {
+const deleteQuestion = async (req,res) => {
     
 }
 
