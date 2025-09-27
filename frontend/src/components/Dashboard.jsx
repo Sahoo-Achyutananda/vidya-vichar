@@ -1,64 +1,85 @@
 import { useEffect, useState } from "react";
 import { Plus, Users, Search } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
+import CreateSuccessModal from './CreateSuccessModal.jsx';
+function HeroSection(){
+  // state for the "join existing class" input
+  const [joinCode,setJoinCode]=useState("");
+  // new state for the "create new class" input
+  const [createName,setCreateName]=useState(""); 
+  // state for showing the success modal
+  const [showModal,setShowModal]=useState(false);
+  // state to store new group info
+  const [newGroupName,setNewGroupName]=useState("");
+  const [newAccessCode,setNewAccessCode]=useState("");
 
-function HeroSection() {
-  const [joinCode, setJoinCode] = useState("");
+  // new function to handle the creation logic and show the modal
+  const handleCreateClass=()=>{
+    // replace this with your actual api call to create the class
+    // for now, simulate a successful creation with mock data
+    if(createName.trim()===""){
+      alert("please enter a group name.");
+      return;
+    }
+    const mockCode=Math.floor(10000+Math.random()*90000); // 5-digit mock code
+    // save the mock data to state and show the modal
+    setNewGroupName(createName.trim());
+    setNewAccessCode(mockCode.toString());
+    setShowModal(true);
+    setCreateName(""); // clear the input field
+    // in a real app, the api response would trigger these state updates
+  };
 
-  return (
+  return(
     <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Create Class Card */}
+          {/* create class card - modified */}
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Plus className="w-8 h-8 text-white" />
+                <Plus className="w-8 h-8 text-white"/>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">Create New Class</h3>
-              <p className="text-purple-200 mb-6">
-                Start a new study class and invite others to join
-              </p>
-              <button className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
-                Create Class
-              </button>
+              <h3 className="text-2xl font-semibold mb-4">create new class</h3>
+              <p className="text-purple-200 mb-6">start a new study class and invite others to join</p>
+              {/* new input and button structure */}
+              <div className="space-y-4">
+                <div className="relative">
+                  <input type="text" placeholder="enter group name..." value={createName} onChange={e=>setCreateName(e.target.value)} className="w-full bg-white/20 border border-white/30 rounded-xl py-3 px-4 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-300"/>
+                </div>
+                <button onClick={handleCreateClass} className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                  create class
+                </button>
+              </div>
             </div>
           </div>
-
-          {/* Join Class Card */}
+          {/* join class card - unmodified */}
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300 group">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Users className="w-8 h-8 text-white" />
+                <Users className="w-8 h-8 text-white"/>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">
-                Join Existing Class
-              </h3>
-              <p className="text-purple-200 mb-6">
-                Enter a class access code to join an existing study class
-              </p>
+              <h3 className="text-2xl font-semibold mb-4">join existing class</h3>
+              <p className="text-purple-200 mb-6">enter a class access code to join an existing study class</p>
               <div className="space-y-4">
                 <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Enter group code..."
-                    value={joinCode}
-                    onChange={(e) => setJoinCode(e.target.value)}
-                    className="w-full bg-white/20 border border-white/30 rounded-xl py-3 px-4 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"
-                  />
-                  <Search className="absolute right-3 top-3 w-5 h-5 text-purple-200" />
+                  <input type="text" placeholder="enter group code..." value={joinCode} onChange={e=>setJoinCode(e.target.value)} className="w-full bg-white/20 border border-white/30 rounded-xl py-3 px-4 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"/>
+                  <Search className="absolute right-3 top-3 w-5 h-5 text-purple-200"/>
                 </div>
-                <button className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
-                  Join Class
-                </button>
+                <button className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">join class</button>
               </div>
             </div>
           </div>
         </div>
       </div>
+      {/* success modal */}
+      {showModal && (
+        <CreateSuccessModal groupName={newGroupName} accessCode={newAccessCode} onClose={()=>setShowModal(false)}/>
+      )}
     </div>
   );
 }
+
 
 function ClassNav({ activeTab, setActiveTab }) {
   const activeNavStyle =
