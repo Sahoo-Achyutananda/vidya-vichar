@@ -17,9 +17,11 @@ It handles user authentication, group management, and Q&A features.
 
 
 ## 🚀 Setup & Run
+```bash
 cd backend
 npm install
 npm run dev
+```
 
 # 📌 Frontend – Vidya Vichar
 
@@ -28,9 +30,11 @@ APIs are handled using axios
 
 
 ## 🚀 Setup & Run
+```bash
 cd frontend
 npm install
 npm run dev
+```
 
 The server starts on **[http://localhost:5173](http://localhost:5173)**.
 
