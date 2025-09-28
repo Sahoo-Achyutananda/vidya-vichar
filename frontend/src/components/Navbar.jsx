@@ -1,13 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; 
-// replace 👤 with a real icon if needed (e.g., react-icons)
+
+import { CircleUserRound, GraduationCap } from 'lucide-react'; 
 
 function Navbar() {
   const navigate = useNavigate();
 
   // logout handler
   const handleLogout = () => {
-    console.log("user logging out"); // placeholder for real auth logic
+    console.log("user logging out"); 
     navigate('/login'); // go to login
   };
   
@@ -17,41 +18,54 @@ function Navbar() {
   };
 
   return (
-    <div className="w-full bg-purple-900/80 backdrop-blur-sm h-[60px] text-white p-4 border-b-2 border-gray-700/50 shadow-xl fixed top-0 z-10">
+    
+    <div className="w-full bg-white/95 backdrop-blur-sm h-[60px] text-gray-800 p-4 border-b-2 border-gray-200 shadow-xl fixed top-0 z-10">
       <div className="max-w-6xl mx-auto flex justify-between items-center h-full">
         
         {/* logo / dashboard navigation */}
         <div
           id="logo"
-          className="text-2xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400 cursor-pointer"
+         
+          className="flex items-center text-2xl font-extrabold tracking-widest text-gray-900 cursor-pointer" 
           onClick={() => navigate('/user/dashboard')}
         >
-          STUDY APP
+          
+          <GraduationCap 
+            className="h-7 w-7 mr-2 text-cyan-600" 
+            strokeWidth={2.5} 
+          />
+          
+       
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-cyan-600">
+            
+          </span>
         </div>
         
-        {/* nav buttons */}
+        
         <div id="navlinks" className="flex flex-row gap-4 items-center">
           
           {/* profile button */}
           <button
             onClick={handleProfileClick}
-            className="text-4xl text-cyan-400 hover:text-green-400 transition-colors duration-300 p-1 rounded-full focus:outline-none focus:ring-4 focus:ring-cyan-500 focus:ring-opacity-50"
+            className="text-gray-600 hover:text-gray-800 transition-colors duration-300 p-1 rounded-full focus:outline-none focus:ring-4 focus:ring-gray-300 focus:ring-opacity-50"
             title="Profile"
           >
-            👤
+            <CircleUserRound className="h-6 w-6" /> 
           </button>
-
+          
           {/* logout button */}
           <button
             onClick={handleLogout}
-            className="px-4 py-1.5 text-sm font-semibold rounded-lg shadow-lg
-                       bg-gradient-to-r from-red-600 to-pink-700
-                       hover:from-red-700 hover:to-pink-800
-                       transition-all duration-300 ease-in-out
-                       focus:outline-none focus:ring-4 focus:ring-red-500 focus:ring-opacity-50"
+            className="px-4 py-1.5 text-sm font-semibold rounded-lg shadow-md
+                      bg-gradient-to-r from-gray-100 to-gray-200
+                      text-gray-800
+                      hover:from-purple-100 hover:to-purple-200 hover:text-purple-700
+                      transition-all duration-300 ease-in-out
+                      focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50"
           >
             Logout
           </button>
+
         </div>
       </div>
     </div>
