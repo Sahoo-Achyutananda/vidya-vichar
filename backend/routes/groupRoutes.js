@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { createGroup, joinGroup, userGroups, getQuestion, postQuestion, updateQuestion, deleteQuestion } = require('../controllers/groupController');
+const { createGroup, joinGroup, userGroups, getQuestion, postQuestion, updateQuestion, deleteQuestion , getAllGroups} = require('../controllers/groupController');
 const verifyUser = require('../middleware/authMiddleware');
 
 router.post('/create', verifyUser, createGroup);
+router.get('/all',verifyUser, getAllGroups);
 router.post('/join', verifyUser, joinGroup);
 router.get('/', verifyUser, userGroups);
 

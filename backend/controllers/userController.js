@@ -10,13 +10,15 @@ const generateToken = (user) => {
 };
 
 const registerUser = async (req, res) => {
+  console.log(req.body);
   try {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
     const existingUser = await Users.findOne({ email });
-    if (existingUser) {
+    console.log(existingUser);
+    if (existingUser === true) {
       return res.status(400).json({ message: "User already exists" });
     }
     const newUser = await Users.create({ username, email, password });
@@ -26,6 +28,7 @@ const registerUser = async (req, res) => {
         sameSite: 'Lax',
         secure: false
       });
+    console.log("New user created:", newUser);
     res.status(201).json({message: "User registered successfully"});
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });

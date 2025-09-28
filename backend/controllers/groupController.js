@@ -78,6 +78,29 @@ const joinGroup = async (req,res) => {
     }
 }
 
+
+const getAllGroups = async (req, res) => {
+  try {
+    const groups = await Groups.find({});
+    if (!groups || groups.length === 0) {
+        return res.status(200).json({ groups: [] });
+    }
+    const sanitizedGroups = groups.map(group => ({
+        id: group._id,
+        groupName: group.groupName,
+        faculty: group.faculty,
+        //   accessCode: group.accessCode,
+        createdAt: group.createdAt,
+        //   questions: group.questions
+        }));
+
+        return res.status(200).json({ groups: sanitizedGroups });
+    } catch (err) {
+        console.error("Error fetching all groups:", err.message);
+        return res.status(500).json({ message: "Server error", error: err.message });
+    }
+};
+
 const userGroups = async (req,res) => {
     try{
         const user = req.user;
@@ -227,4 +250,4 @@ const deleteQuestion = async (req,res) => {
     }
 }
 
-module.exports = {createGroup, joinGroup, userGroups,getQuestion, postQuestion, updateQuestion, deleteQuestion};
+module.exports = {createGroup, joinGroup, userGroups,getQuestion, postQuestion, updateQuestion, deleteQuestion, getAllGroups};
