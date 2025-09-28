@@ -1,12 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { Plus, Users, Search } from "lucide-react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CreateSuccessModal from './CreateSuccessModal.jsx';
 import { UserContext } from "../contexts/userContext.jsx";
 import axios from "axios";
 
 function HeroSection({fetchClasses}){
-
+  const navigate = useNavigate();
   // get user details - 
   const {user} = useContext(UserContext);
 
@@ -30,9 +30,9 @@ function HeroSection({fetchClasses}){
       alert("Please enter a group name.");
       return;
     }
-
-    const res = await axios.post(`${import.meta.env.VITE_DB_LINK}/api/groups/create`, {username : user.username, groupname : createName }, {withCredentials : true});
+    const res = await axios.post(`${import.meta.env.VITE_DB_LINK}/api/groups/create`, {username : user.username,  groupname : createName }, {withCredentials : true});
     console.log(res.data);
+    console.log("dashboard suer", user);
 
     const mockCode=Math.floor(10000+Math.random()*90000); // 5-digit mock code
     // save the mock data to state and show the modal
@@ -45,13 +45,14 @@ function HeroSection({fetchClasses}){
 
   async function handleJoinClass() {
     try {
-      await axios.post(
+      const res = await axios.post(
         `${import.meta.env.VITE_DB_LINK}/api/groups/join`,
         { username: user.username, accesscode: accessCode },
         { withCredentials: true }
       );
       // console.log(res.data);
       alert("Successfully joined the class!");
+      navigate(`/groups/${res.data.groupid}`);
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Failed to join the class";
       alert(errorMessage);

@@ -1,18 +1,23 @@
 /* eslint-disable no-unused-vars */
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useContext, useState } from "react";
 import { Users, MessageCircle, Check, X, Clock, Plus, BookOpen, User, Calendar } from "lucide-react";
 import axios from "axios"
+import { UserContext } from "../contexts/userContext";
 
 function ClassPage() {
   const {classId} = useParams();
   const [classInfo, setClassInfo] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState("instructor");
-
-  
+  const [userRole, setUserRole] = useState("");
   const [question,setQuestion] = useState("");
+  
+  const { user } = useContext(UserContext);
+
+  useEffect(() => {
+    
+  }, [user, classInfo]);
 
   useEffect(() => {
     const fetchClassData = async () => {
@@ -22,10 +27,25 @@ function ClassPage() {
         // console.log(classRes, classData);
         // console.log(classData.questions);
 
-        console.log(classRes.data);
+        // console.log(classRes.data);
 
         setClassInfo(classRes.data);
         setQuestions(classRes.data.questions);
+
+        console.log("class info", classRes.data);
+
+        const roleRes = await axios.get(`${import.meta.env.VITE_DB_LINK}/api/groups/${classId}/role`, { withCredentials: true });
+        setUserRole(roleRes.data.role);
+        console.log("user role", roleRes.data.role);
+        // if (user && classInfo) {
+        //   if (classInfo.facultyId === user.id || user.created_classes.includes(classId)) {
+        //     setUserRole("instructor");
+        //   } else {
+        //     setUserRole("student");
+        //   }
+        // }
+        // console.log("user", user);
+        // console.log("user role" ,userRole);
         
         setLoading(false);
       } catch (err) {

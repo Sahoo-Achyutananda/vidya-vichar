@@ -10,7 +10,7 @@ export const UserProvider = ({ children }) => {
 
     const getUserProfile = async () => {
     try {
-        const res = await axios.get("/api/users/profile");
+        const res = await axios.get("/api/users/profile", {withCredentials: true});
         return res.data;
     } catch (err) {
         console.error(err.response?.data || err.message);
