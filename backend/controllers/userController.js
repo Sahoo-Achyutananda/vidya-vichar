@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Users = require("../models/userModel");
+const { getClassesDetails } = require('./groupController'); 
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -9,7 +10,6 @@ const generateToken = (user) => {
   );
 };
 
-// ---------------- Register ----------------
 const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -41,7 +41,6 @@ const registerUser = async (req, res) => {
   }
 };
 
-// ---------------- Login ----------------
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -71,4 +70,44 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+// Controller Function for /profile endpoint
+const getProfileDetails = async (req, res) => {
+  try {
+    // Fetch user, including the created_classes and joined_classes arrays of IDs
+    const user = await Users.findById(req.user.id).select("-password created_classes joined_classes");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Fetch details for created classes (Teacher role)
+    const createdClassesDetails = await getClassesDetails(user.created_classes);
+    const createdClasses = createdClassesDetails.map(cls => ({
+        name: cls.name,
+        role: 'Teacher'
+    }));
+
+    // Fetch details for joined classes (Student role)
+    const joinedClassesDetails = await getClassesDetails(user.joined_classes);
+    const joinedClasses = joinedClassesDetails.map(cls => ({
+        name: cls.name,
+        role: 'Student'
+    }));
+    
+    // Construct the final profile object
+    const profileData = {
+      name: user.username, 
+      email: user.email,
+      createdClasses,
+      joinedClasses,
+    };
+
+    // Send the structured data back to the frontend
+    res.status(200).json(profileData);
+
+  } catch (err) {
+    console.error("Error fetching profile details:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
+module.exports = { registerUser, loginUser, getProfileDetails };

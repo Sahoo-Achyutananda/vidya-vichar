@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios"
 
 function SignupPage() {
@@ -8,9 +8,9 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  async function handleSubmit(e){
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!name || !email || !password || !confirmPassword) {
       setError("Please fill all fields");
@@ -24,12 +24,25 @@ function SignupPage() {
       setError("Passwords do not match");
       return;
     }
-    // fake signup
 
-    const res = await axios.post(`${import.meta.env.VITE_DB_LINK}/api/users/register`,{username : name, email, password}, { withCredentials: true });
-    const resData = res.data;
-    console.log(resData);
-    // navigate("/login");
+    try {
+      // API call to register
+      const res = await axios.post(
+        `${import.meta.env.VITE_DB_LINK}/api/users/register`,
+        { username: name, email, password },
+        { withCredentials: true }
+      );
+
+      console.log(res.data);
+
+      // SUCCESS: Navigate to the login page
+      navigate("/login");
+
+    } catch (err) {
+      // Handles error (e.g., email already taken)
+      const errorMessage = err.response?.data?.message || "Registration failed. Please try again.";
+      setError(errorMessage);
+    }
   };
 
   return (
