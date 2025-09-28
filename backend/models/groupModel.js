@@ -36,6 +36,10 @@ const groupSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  facultyId: {
+    type: String,
+    required: true
+  },
   accessCode: {
     type: String,
     required: true,

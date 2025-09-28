@@ -5,6 +5,9 @@ const mongoose = require("mongoose");
 const createGroup = async (req,res) => {
     const {groupname} = req.body;
     const username = req.user.username;
+    const id = req.user.id;
+
+    console.log(username, id);
     if(!groupname || !username || !username.trim() || !groupname.trim() ){
         return res.status(401).json({ message: 'both fields are required' });
     }
@@ -30,6 +33,7 @@ const createGroup = async (req,res) => {
         const newGroup = await Groups.create({
             groupName : groupname,
             faculty : username,
+            facultyId : id,
             accessCode : accesscode
         });
         await Users.findOneAndUpdate(
@@ -127,6 +131,7 @@ const getQuestion = async (req,res) => {
         res.status(200).json({
             groupName : data.groupName,
             faculty : data.faculty,
+            facultyid : data.facultyId,
             accessCode : data.accessCode,
             questions : data.questions
         });
