@@ -1,6 +1,4 @@
-````markdown
-
-# Github Link : [https://github.com/Sahoo-Achyutananda/vidya-vichar/tree/test]
+### Github Link : [https://github.com/Sahoo-Achyutananda/vidya-vichar/tree/test]
 # Assumption
 
 1. Everytime there is a new question or any changes in the group all the group members should refresh.
@@ -33,9 +31,8 @@ APIs are handled using axios
 cd frontend
 npm install
 npm run dev
-````
 
-The server starts on **[http://localhost:5000](http://localhost:5000)**.
+The server starts on **[http://localhost:5173](http://localhost:5173)**.
 
 ---
 
