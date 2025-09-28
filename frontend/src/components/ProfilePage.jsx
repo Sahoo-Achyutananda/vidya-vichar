@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import data from '../../data/data.json'; 
+import axios from 'axios';
 
-const LOGGED_IN_USER_ID = 1; // Simulate logged-in user
+const PROFILE_ENDPOINT = '/profile';
 
-// Simple class item component
 const ClassItem = ({ name, role }) => (
   <div className="flex justify-between items-center p-2 border-b border-gray-300">
     <span>{name}</span>
@@ -13,54 +12,54 @@ const ClassItem = ({ name, role }) => (
 
 function ProfilePage() {
   const [profile, setProfile] = useState(null);
-  // Control active tab, initialized to 'created'
-  const [activeTab, setActiveTab] = useState('created'); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('created');
 
   useEffect(() => {
-    // Logic to fetch user data and process classes
-    const user = data.users.find(u => u.id === LOGGED_IN_USER_ID);
-    if (!user) return;
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
 
-    const createdClasses = user.created_classes.map(id => {
-      const cls = data.classes.find(c => c.id === id);
-      return { name: cls?.name || 'Unknown', role: 'Teacher' };
-    });
+      try {
 
-    const joinedClasses = user.joined_classes.map(id => {
-      const cls = data.classes.find(c => c.id === id);
-      return { name: cls?.name || 'Unknown', role: 'Student' };
-    });
+        const response = await axios.get(PROFILE_ENDPOINT);
+        const data = response.data;
 
-    setProfile({
-      name: user.name,
-      email: user.email,
-      createdClasses,
-      joinedClasses,
-    });
+        setProfile(data);
 
-    // Default to 'joined' tab if user has no created classes but has joined classes
-    if (createdClasses.length === 0 && joinedClasses.length > 0) {
-      setActiveTab('joined');
-    }
+        if (data.createdClasses.length === 0 && data.joinedClasses.length > 0) {
+          setActiveTab('joined');
+        }
+
+      } catch (e) {
+        console.error('Fetching profile failed:', e);
+
+        if (e.response) {
+          setError(`Error ${e.response.status}: Failed to load profile.`);
+        } else {
+          setError(e.message || 'Network error: Server is unreachable.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
-  /**
-   * Corrected function to return consistent styling for both tabs.
-   * The active tab receives the green background, and the inactive tab is plain text.
-   */
   const getTabClasses = (tabName) => {
     const isActive = activeTab === tabName;
-
-    // Styles for the active (selected) tab
     const activeStyles = 'px-4 py-2 text-sm font-medium bg-green-500 text-white rounded hover:bg-green-600 shadow-md';
-    
-    // Styles for the inactive (unselected) tab
-    const inactiveStyles = 'px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-800'; 
-
+    const inactiveStyles = 'px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-800';
     return isActive ? activeStyles : inactiveStyles;
   };
 
-  if (!profile) return <p className="p-8">Loading profile...</p>;
+  if (loading) return <p className="p-8">Loading profile...</p>;
+
+  if (error) return <p className="p-8 text-red-600">Error: {error}</p>;
+
+  if (!profile) return <p className="p-8">No profile data available.</p>;
 
   return (
     <div className="min-h-screen bg-white p-8">
