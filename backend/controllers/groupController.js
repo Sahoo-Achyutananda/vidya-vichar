@@ -34,7 +34,7 @@ const createGroup = async (req,res) => {
         });
         await Users.findOneAndUpdate(
             {username:username},
-            {$push:{created_classes:newGroup.groupName}}
+            {$push:{created_classes:newGroup._id}}
         );
         return res.status(200).json({message: 'Group created', group: newGroup });
     }catch(err){
@@ -43,41 +43,31 @@ const createGroup = async (req,res) => {
     }
 }
 
-const joinGroup = async (req,res) => {
-    const {groupname,accesscode} = req.body;
-    const username = req.user.username;
-    if(!groupname || !username || !username.trim() || !groupname.trim() || !accesscode || !accesscode.trim() ){
-        return res.status(401).json({ message: 'All fields are required' });
-    }
-    let data;
-    try{
-        data = await Groups.findOne({
-            groupName : groupname
-        });
-    }catch(err){
-        console.log("mongodb operation failed" + err.message);
-        return res.status(401).json({ message: 'server error' });
-    }
-    if(!data){
-        return res.status(401).json({ message: 'group Name doesnot exists' });
-    }
-    if(data.accessCode === accesscode){
-        try{
-            await Users.findOneAndUpdate(
-                {username:username},
-                {$push:{joined_classes:groupname}}
-            );
-            return res.status(200).json({message: 'joined successfully'});
-        }catch(err){
-            console.log("mongodb operation failed" + err.message);
-            return res.status(401).json({ message: 'server error' });
-        }
-    }
-    else{
-        return res.status(401).json({ message: 'access code is incorrect' });
-    }
-}
+const joinGroup = async (req, res) => {
+  const username = req.user.username;
+  const { accesscode } = req.body;
 
+  if (!username || !accesscode || !accesscode.trim()) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  try {
+    const group = await Groups.findOne({ accessCode: accesscode });
+    if (!group) {
+      return res.status(404).json({ message: 'Group code does not exist' });
+    }
+
+    await Users.findOneAndUpdate(
+      { username },
+      { $addToSet: { joined_classes: group._id } }
+    );
+
+    return res.status(200).json({ message: 'Joined successfully', groupid: group._id });
+  } catch (err) {
+    console.error("MongoDB operation failed:", err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
 
 const getAllGroups = async (req, res) => {
   try {
@@ -130,7 +120,7 @@ const getQuestion = async (req,res) => {
             return res.status(401).json({ message: 'invalid group id' });
         }
         const user = await Users.findOne({ username: req.user.username });
-        const isMember = user.created_classes.includes(data.groupName) || user.joined_classes.includes(data.groupName);
+        const isMember = user.created_classes.includes(data._id) || user.joined_classes.includes(data._id);
         if (!isMember) {
             return res.status(403).json({ message: 'You are not part of this group' });
         }

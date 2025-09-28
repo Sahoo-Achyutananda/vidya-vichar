@@ -5,14 +5,14 @@ import CreateSuccessModal from './CreateSuccessModal.jsx';
 import { UserContext } from "../contexts/userContext.jsx";
 import axios from "axios";
 
-function HeroSection(){
+function HeroSection({fetchClasses}){
 
   // get user details - 
   const {user} = useContext(UserContext);
 
 
   // state for the "join existing class" input
-  const [joinCode,setJoinCode]=useState("");
+  const [accessCode,setAccessCode]=useState("");
   // new state for the "create new class" input
   const [createName,setCreateName]=useState(""); 
   // state for showing the success modal
@@ -39,9 +39,25 @@ function HeroSection(){
     setNewGroupName(createName.trim());
     setNewAccessCode(mockCode.toString());
     setShowModal(true);
-    setCreateName(""); // clear the input field
-    // in a real app, the api response would trigger these state updates
+    setCreateName("");
+    fetchClasses();
   };
+
+  async function handleJoinClass() {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_DB_LINK}/api/groups/join`,
+        { username: user.username, accesscode: accessCode },
+        { withCredentials: true }
+      );
+      // console.log(res.data);
+      alert("Successfully joined the class!");
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Failed to join the class";
+      alert(errorMessage);
+    }
+  }
+
 
   return(
     <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
@@ -70,14 +86,14 @@ function HeroSection(){
               <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Users className="w-8 h-8 text-white"/>
               </div>
-              <h3 className="text-2xl font-semibold mb-4">join existing class</h3>
-              <p className="text-purple-200 mb-6">enter a class access code to join an existing study class</p>
+              <h3 className="text-2xl font-semibold mb-4">Join Existing Class</h3>
+              <p className="text-purple-200 mb-6">Enter a class access code to join an class</p>
               <div className="space-y-4">
                 <div className="relative">
-                  <input type="text" placeholder="Enter Group Code" value={joinCode} onChange={e=>setJoinCode(e.target.value)} className="w-full bg-white/20 border border-white/30 rounded-xl py-3 px-4 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"/>
+                  <input type="text" placeholder="Enter Group Code" value={accessCode} onChange={e=>setAccessCode(e.target.value)} className="w-full bg-white/20 border border-white/30 rounded-xl py-3 px-4 text-white placeholder-purple-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-300"/>
                   <Search className="absolute right-3 top-3 w-5 h-5 text-purple-200"/>
                 </div>
-                <button className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">Join Class</button>
+                <button onClick={()=>handleJoinClass()} className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">Join Class</button>
               </div>
             </div>
           </div>
@@ -129,32 +145,9 @@ function ClassNav({ activeTab, setActiveTab }) {
   );
 }
 
-function ClassList() {
-  const [classes, setClasses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("active");
+function ClassList({classes, loading, activeTab, setActiveTab}) {
+  
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchClasses = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_DB_LINK}/api/groups/all`, {withCredentials : true});
-        const data = response.data;
-
-        console.log("Fetched classes:", data);
-        
-        setClasses(data);
-        setLoading(false);
-
-        console.log(data);
-        
-      } catch (error) {
-        console.error("Failed to fetch classes:", error);
-        setLoading(false);
-      }
-    };
-    fetchClasses();
-  }, [activeTab]);
 
   // kankaalllll
   if (loading) {
@@ -227,10 +220,12 @@ function ClassList() {
                       <h3 className="text-xl font-semibold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors duration-300">
                         {classItem.groupName}
                       </h3>
+                      
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between">
+                    <p className="text-gray-400 font-bold">{classItem.faculty}</p>
                     <button className="text-purple-600 hover:text-purple-700 font-medium text-sm transition-colors duration-300">
                       View →
                     </button>
@@ -246,10 +241,36 @@ function ClassList() {
 }
 
 function Dashboard() {
+  const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("active");
+
+  const fetchClasses = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_DB_LINK}/api/groups/all`, {withCredentials : true});
+        const data = response.data;
+
+        // console.log("Fetched classes:", data.groups);
+        
+        setClasses(data.groups);
+        setLoading(false);
+
+        console.log(data);
+        
+      } catch (error) {
+        console.error("Failed to fetch classes:", error);
+        setLoading(false);
+      }
+    };
+
+  useEffect(() => {
+    fetchClasses();
+  }, [activeTab]);
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <HeroSection />
-      <ClassList />
+      <HeroSection fetchClasses={fetchClasses}/>
+      <ClassList classes={classes} loading={loading} activeTab={activeTab} setLoading={setLoading} setClasses={setClasses} setActiveTab={setActiveTab} />
     </div>
   );
 }

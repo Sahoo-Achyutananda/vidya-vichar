@@ -2,6 +2,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Users, MessageCircle, Check, X, Clock, Plus, BookOpen, User, Calendar } from "lucide-react";
+import axios from "axios"
 
 function ClassPage() {
   const {classId} = useParams();
@@ -16,12 +17,15 @@ function ClassPage() {
   useEffect(() => {
     const fetchClassData = async () => {
       try {
-        const classRes = await fetch(`${import.meta.env.VITE_DB_LINK}/groups/${classId}`);
-        const classData = await classRes.json();
+        const classRes = await axios.get(`${import.meta.env.VITE_DB_LINK}/api/groups/${classId}`, {withCredentials : true});
+        // const classData = await classRes.json();
         // console.log(classRes, classData);
         // console.log(classData.questions);
-        setClassInfo(classData);
-        setQuestions(classData.questions);
+
+        console.log(classRes.data);
+
+        setClassInfo(classRes.data);
+        setQuestions(classRes.data.questions);
         
         setLoading(false);
       } catch (err) {
