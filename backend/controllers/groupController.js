@@ -143,6 +143,7 @@ const getQuestion = async (req,res) => {
 const postQuestion = async (req,res) => {
     try{
         const {groupid} = req.params;
+        console.log(groupid);
         const data = await Groups.findOne({
             _id : groupid
         });
@@ -150,20 +151,25 @@ const postQuestion = async (req,res) => {
             return res.status(401).json({ message: 'invalid group id' });
         }
         const {question} = req.body;
-        const author = req.user.username;
+        const author = req.user.username
+
+        console.log(question,author);
+
         if(!question || !author || !question.trim() || !author.trim()){
             return res.status(401).json({ message: 'both fields are required' });
         }
         const user = await Users.findOne({ username: author });
-        const isMember = user.created_classes.includes(data.groupName) || user.joined_classes.includes(data.groupName);
-        if (!isMember) {
-            return res.status(403).json({ message: 'You are not part of this group' });
-        }
+        // const isMember = user.created_classes.includes(data.groupName) || user.joined_classes.includes(data.groupName);
+        // if (!isMember) {
+        //     return res.status(403).json({ message: 'You are not part of this group' });
+        // }
         const newQuestion = {
             _id: new mongoose.Types.ObjectId(),
             author : author.trim(),
             questionText : question.trim(),
-            questionTimestamp : Date.now()
+            questionTimestamp : Date.now(),
+            status : "unanswered",
+            important : "no"
         }
         await Groups.findOneAndUpdate(
             {_id : groupid},
@@ -171,53 +177,117 @@ const postQuestion = async (req,res) => {
         );
         res.status(200).json({ 
             message: "Question added successfully",
-            questionid : newQuestion._id
+            questionid : newQuestion._id, 
+            author : newQuestion.author,
+            questionText : newQuestion.questionText,
+            questionTimestamp : newQuestion.questionTimestamp,
+            status : newQuestion.status,
+            important : newQuestion.important
         });
     }catch(err){
         return res.status(401).json({ message: 'server error' });
     }
 }
 
-const updateQuestion = async (req,res) => {
-    try{
-        const {groupid,questionid} = req.params;
-        // console.log(groupid, questionid);
-        const data = await Groups.findOne({
-            _id : groupid
-        });
-        // console.log(data);
-        if(!data){
-            return res.status(401).json({ message: 'invalid group id' });
-        }
-        const {answer,status} = req.body;
-        if(!status){
-            return res.status(401).json({ message: 'field are required' });
-        }
-        const user = await Users.findOne({ username: req.user.username });
-        const isMember = user.created_classes.includes(data.groupName) || user.joined_classes.includes(data.groupName);
-        if (!isMember) {
-            return res.status(403).json({ message: 'You are not part of this group' });
-        }
-        const updatefield = {"questions.$.status": status};
-        if (answer !== undefined && answer.trim() !== "") {
-            updatefield["questions.$.answerText"] = answer;
-            updatefield["questions.$.answerTimestamp"] = new Date();
-            updatefield["questions.$.status"] = "answered"; 
-        }
-        const update = await Groups.findOneAndUpdate(
-            { _id: groupid, "questions._id": questionid, "faculty": req.user.username },
-            { $set: updatefield },
-            { new: true }
-        );
-        if (!update) {
-            return res.status(404).json({ message: "Question not found" });
-        } else {
-            return res.status(201).json({ message: "Question updated successfully" });
-        }
-    }catch(err){
-        return res.status(401).json({ message: 'server error' });
+// const updateQuestion = async (req,res) => {
+//     try{
+//         const {groupid,questionid} = req.params;
+//         // console.log(groupid, questionid);
+//         const data = await Groups.findOne({
+//             _id : groupid
+//         });
+//         // console.log(data);
+//         if(!data){
+//             return res.status(401).json({ message: 'invalid group id' });
+//         }
+//         const {status} = req.body;
+//         console.log(status, questionid);
+//         if(!status){
+//             return res.status(401).json({ message: 'field are required' });
+//         }
+//         const user = await Users.findOne({ username: req.user.username });
+//         // const isMember = user.created_classes.includes(data.groupName) || user.joined_classes.includes(data.groupName);
+//         // if (!isMember) {
+//         //     return res.status(403).json({ message: 'You are not part of this group' });
+//         // }
+//         console.log(user);
+//         const updatefield = {"questions.$.status": status};
+//         if (status == "answered") {
+//             // updatefield["questions.$.answerText"] = answer;
+//             updatefield["questions.$.answerTimestamp"] = new Date();
+//             updatefield["questions.$.status"] = status; 
+//         }
+//         console.log(",,,,");
+//         const update = await Groups.findOneAndUpdate(
+//             { _id: groupid, "questions._id": questionid }, //  "faculty": req.user.username
+//             { $set: updatefield },
+//             { new: true }
+//         );
+//         console.log(".....");
+//         if (!update) {
+//             return res.status(404).json({ message: "Question not found" });
+//         } else {
+//             return res.status(201).json({ message: "Question updated successfully" });
+//         }
+//     }catch(err){
+//         return res.status(401).json({ message: 'server error' });
+//     }
+// }
+
+const updateQuestion = async (req, res) => {
+  try {
+    const { groupid, questionid } = req.params;
+
+    // check group existence
+    const group = await Groups.findById(groupid);
+    if (!group) {
+      return res.status(404).json({ message: "Invalid group id" });
     }
-}
+
+    const { status, important } = req.body; // allow both fields
+
+    if (!status && !important) {
+      return res.status(400).json({ message: "At least one field (status or important) is required" });
+    }
+
+    // check if user exists
+    const user = await Users.findOne({ username: req.user.username });
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    // build update fields dynamically
+    const updatefield = {};
+    if (status) {
+      updatefield["questions.$.status"] = status;
+
+      if (status === "answered") {
+        updatefield["questions.$.answerTimestamp"] = new Date();
+      }
+    }
+
+    if (important) {
+      updatefield["questions.$.important"] = important;
+    }
+
+    // update
+    const updatedGroup = await Groups.findOneAndUpdate(
+      { _id: groupid, "questions._id": questionid },
+      { $set: updatefield },
+      { new: true }
+    );
+
+    if (!updatedGroup) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    return res.status(200).json({ message: "Question updated successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 const deleteQuestion = async (req,res) => {
     try{

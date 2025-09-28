@@ -18,5 +18,4 @@ router.put('/:groupid',verifyUser,changeStatus);
 // GET /api/groups/:classId/role
 router.get("/:classId/role", verifyUser, getUserRole);
 
-
 module.exports = router;

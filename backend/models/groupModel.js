@@ -7,8 +7,13 @@ const questionSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["unanswered", "answered", "important"],
+    enum: ["unanswered", "answered"],
     default: "unanswered"
+  },
+  important: {
+    type: String,
+    enum: ["yes", "no"],
+    default: "no"
   },
   questionText: {
     type: String,

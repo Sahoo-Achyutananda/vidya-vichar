@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { useParams } from "react-router-dom";
 import { useEffect, useContext, useState } from "react";
-import { Users, MessageCircle, Check, X, Clock, Plus, BookOpen, User, Calendar } from "lucide-react";
+import { Users, MessageCircle, Check, X, Clock, Plus, BookOpen, User, Calendar, Star, StarOff } from "lucide-react";
+
 import axios from "axios"
 import { UserContext } from "../contexts/userContext";
 
@@ -57,20 +58,109 @@ function ClassPage() {
   }, [classId]);
 
   //////////////////////////////////// APIs needed !
-  const handleMarkAnswered = (questionId) => {
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? { ...q, status: "answered" } : q
-    ));
+  // const handleMarkAnswered = async (questionId) => {
+  //     console.log(questionId);
+  //     const res  = await  axios.post(`${import.meta.env.VITE_DB_LINK}/api/groups/${classId}/questions/${questionId}`, {status : "answered"}, {withCredentials : true});
+  //     console.log(res.data);
+  //   // setQuestions(prev => prev.map(q => 
+  //   //   q.id === questionId ? { ...q, status: "answered" } : q
+  //   // ));
+  // };
+  const handleMarkAnswered = async (questionId) => {
+    try {
+      console.log(questionId);
+      const res = await axios.put(
+        `${import.meta.env.VITE_DB_LINK}/api/groups/${classId}/questions/${questionId}`,
+        { status: "answered" },
+        { withCredentials: true }
+      );
+
+      console.log(res.data);
+
+      setQuestions(prev =>
+        prev.map(q => q._id === questionId ? { ...q, status: "answered" } : q)
+      );
+    } catch (err) {
+      console.error("Error marking answered:", err);
+    }
   };
 
-  const handleMarkUnanswered = (questionId) => {
-    setQuestions(prev => prev.map(q => 
-      q.id === questionId ? { ...q, status: "unanswered" } : q
-    ));
+
+  const handleMarkUnanswered = async (questionId) => {
+    try {
+      console.log(questionId);
+      const res = await axios.put(
+        `${import.meta.env.VITE_DB_LINK}/api/groups/${classId}/questions/${questionId}`,
+        { status: "unanswered" }, 
+        { withCredentials: true }
+      );
+
+      console.log(res.data);
+
+      // Update the question's status in the local state
+      setQuestions(prev =>
+        prev.map(q => q._id === questionId ? { ...q, status: "unanswered" } : q)
+      );
+    } catch (err) {
+      console.error("Error marking unanswered:", err); // Updated error message
+    }
+  };
+  
+  const handleImportant = async (questionId) => {
+    try {
+      console.log(questionId);
+      const res = await axios.put(
+        `${import.meta.env.VITE_DB_LINK}/api/groups/${classId}/questions/${questionId}`,
+        { important: "yes" }, 
+        { withCredentials: true }
+      );
+
+      console.log(res.data);
+
+      // Update the question's status in the local state
+      setQuestions(prev =>
+        prev.map(q => q._id === questionId ? { ...q, important: "yes" } : q)
+      );
+    } catch (err) {
+      console.error("Error marking important:", err); // Updated error message
+    }
   };
 
-  const handleAskQuestion = ()=>{
-    console.log(question);
+  const handleNotImportant = async (questionId) => {
+    try {
+      console.log(questionId);
+      const res = await axios.put(
+        `${import.meta.env.VITE_DB_LINK}/api/groups/${classId}/questions/${questionId}`,
+        { important: "no" }, 
+        { withCredentials: true }
+      );
+
+      console.log(res.data);
+
+      // Update the question's status in the local state
+      setQuestions(prev =>
+        prev.map(q => q._id === questionId ? { ...q, important: "no" } : q)
+      );
+    } catch (err) {
+      console.error("Error marking unimportant:", err); // Updated error message
+    }
+  };
+
+  // const handleMarkUnanswered = async(questionId,newState) => {
+  //   setQuestions(prev => prev.map(q => 
+  //     q.id === questionId ? { ...q, status: "unanswered" } : q
+  //   ));
+  // };
+
+
+  /////////////////////////////////
+  const handleAskQuestion = async ()=>{
+    // console.log(question);
+    const res  = await axios.post(`${import.meta.env.VITE_DB_LINK}/api/groups/${classId}`, {question, author : user.username}, {withCredentials : true});
+    // console.log(res.data)
+    setQuestions(prev => [...prev, res.data]);
+    setQuestion(""); 
+    console.log(res.data);
   }
 
   if (loading) {
@@ -108,7 +198,7 @@ function ClassPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <ClassInfo classInfo={classInfo} userRole={userRole} />
+      <ClassInfo classInfo={classInfo} userRole={userRole} question={question} setQuestion={setQuestion} handleAskQuestion={handleAskQuestion} />
       <QuestionsSection 
         questions={questions} 
         userRole={userRole}
@@ -117,6 +207,8 @@ function ClassPage() {
         setQuestion={setQuestion}
         onMarkAnswered={handleMarkAnswered}
         onMarkUnanswered={handleMarkUnanswered}
+        onHandleImportant={handleImportant}
+        onHandleNotImportant={handleNotImportant}
       />
     </div>
   );
@@ -150,7 +242,7 @@ function ClassInfo({ classInfo, userRole, question, handleAskQuestion , setQuest
                   type="text"
                   value={question}
                   onChange={(e) =>
-                    setQuestion( e.target.value )
+                    setQuestion(e.target.value)
                   }
                   placeholder="Type your question here..."
                   className="w-full p-3 rounded-lg bg-white/80 text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -171,17 +263,20 @@ function ClassInfo({ classInfo, userRole, question, handleAskQuestion , setQuest
   );
 }
 
-function QuestionsSection({ questions, userRole, onMarkAnswered, onMarkUnanswered }) {
+function QuestionsSection({ questions, userRole,question, onMarkAnswered, onMarkUnanswered, onHandleImportant ,onHandleNotImportant}) {
   const [filter, setFilter] = useState("all");
   
   const filteredQuestions = questions.filter(q => {
+    if(!q) return false;
     if (filter === "answered") return q.status === "answered";
     if (filter === "unanswered") return q.status === "unanswered";
+    if (filter === "important") return q.important === "yes";
     return true;
   });
 
   const answeredCount = questions.filter(q => q.status === "answered").length;
   const unansweredCount = questions.filter(q => q.status === "unanswered").length;
+  const importantCount = questions.filter(q => q.important === "yes").length;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
@@ -224,6 +319,16 @@ function QuestionsSection({ questions, userRole, onMarkAnswered, onMarkUnanswere
           >
             Pending ({unansweredCount})
           </button>
+          <button
+            onClick={() => setFilter("important")}
+            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+              filter === "important" 
+                ? "bg-orange-600 text-white" 
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            Important ({importantCount})
+          </button>
         </div>
       </div>
 
@@ -251,11 +356,13 @@ function QuestionsSection({ questions, userRole, onMarkAnswered, onMarkUnanswere
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredQuestions.map((question) => (
             <Question 
-              key={question.id} 
+              id={question._id} 
               ques={question} 
               userRole={userRole}
               onMarkAnswered={onMarkAnswered}
               onMarkUnanswered={onMarkUnanswered}
+              onHandleImportant = {onHandleImportant}
+              onHandleNotImportant = {onHandleNotImportant}
             />
           ))}
         </div>
@@ -264,8 +371,9 @@ function QuestionsSection({ questions, userRole, onMarkAnswered, onMarkUnanswere
   );
 }
 
-function Question({ ques, userRole, onMarkAnswered, onMarkUnanswered }) {
+function Question({id, ques, userRole, onMarkAnswered, onMarkUnanswered, onHandleImportant, onHandleNotImportant }) {
   const isAnswered = ques.status === "answered";
+  const isImportant = ques.important === "yes";
   
   return (
     <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
@@ -294,7 +402,7 @@ function Question({ ques, userRole, onMarkAnswered, onMarkUnanswered }) {
                   </>
                 )}
               </span>
-              <span className="text-xs text-gray-500">{ques.questionTimestamp}</span>
+              <span className="text-xs text-gray-500">{new Date(ques.questionTimestamp).toLocaleString()}</span>
             </div>
             
             <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300 line-clamp-3">
@@ -311,13 +419,12 @@ function Question({ ques, userRole, onMarkAnswered, onMarkUnanswered }) {
 
         {/* Actions */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-
-          
           {userRole === "instructor" && (
+            <>
             <div className="flex items-center space-x-2">
               {isAnswered ? (
                 <button
-                  onClick={() => onMarkUnanswered(ques.id)}
+                  onClick={() => onMarkUnanswered(id)}
                   className="bg-orange-100 hover:bg-orange-200 text-orange-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-1"
                 >
                   <X className="w-4 h-4" />
@@ -325,7 +432,7 @@ function Question({ ques, userRole, onMarkAnswered, onMarkUnanswered }) {
                 </button>
               ) : (
                 <button
-                  onClick={() => onMarkAnswered(ques.id)}
+                  onClick={() => onMarkAnswered(id)}
                   className="bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-1"
                 >
                   <Check className="w-4 h-4" />
@@ -333,6 +440,28 @@ function Question({ ques, userRole, onMarkAnswered, onMarkUnanswered }) {
                 </button>
               )}
             </div>
+            <div className="flex items-center space-x-2">
+              {isImportant ? (
+                <button
+                  onClick={() => onHandleNotImportant(id)}
+                  className="bg-orange-100 hover:bg-orange-200 text-orange-700 px-1.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-1"
+                >
+                  <StarOff className="w-5.5 h-5.5" />
+                  {/* <span>Unmark Important</span> */}
+                </button>
+              ) : (
+                <button
+                  onClick={() => onHandleImportant(id)}
+                  className="bg-green-100 hover:bg-green-200 text-green-700 px-1.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 flex items-center space-x-1"
+                >
+                  <Star className="w-5.5 h-5.5" />
+                  {/* <span>Mark Important</span> */}
+                </button>
+              )}
+            </div>
+
+            </>
+            
           )}
         </div>
       </div>

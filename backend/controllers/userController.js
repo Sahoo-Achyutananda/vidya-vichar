@@ -61,7 +61,7 @@ const loginUser = async (req, res) => {
       secure: false,
       maxAge: 30 * 24 * 60 * 60 * 1000,
     });
-
+    
     res.status(200).json({
       message: "Login successful",
       user: { id: user._id, username: user.username, email: user.email },
