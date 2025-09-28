@@ -1,13 +1,11 @@
 ````markdown
 # 📌 Backend – Vidya Vichar
 
-The backend is built with **Node.js, Express, MongoDB (Mongoose)** and runs on **port 5000**.  
+The backend is built with Node.js, Express, MongoDB (Mongoose) and runs on port 5000.  
 It handles user authentication, group management, and Q&A features.  
 
----
 
 ## 🚀 Setup & Run
-```bash
 cd backend
 npm install
 npm run dev
@@ -75,8 +73,8 @@ The server starts on **[http://localhost:5000](http://localhost:5000)**.
   "_id": "...",
   "username": "john123",
   "email": "john@example.com",
-  "created_classes": [...],
-  "joined_classes": [...]
+  "created_classes": [  ],
+  "joined_classes": [  ]
 }
 ```
 
@@ -97,7 +95,7 @@ The server starts on **[http://localhost:5000](http://localhost:5000)**.
 * **Response**
 
 ```json
-{ "message": "Group created", "group": {...} }
+{ "message": "Group created", "group": {  } }
 ```
 
 ### 2. Join Group
@@ -138,8 +136,8 @@ The server starts on **[http://localhost:5000](http://localhost:5000)**.
 
 ```json
 {
-  "created_classes": [...],
-  "joined_classes": [...]
+  "created_classes": [  ],
+  "joined_classes": [  ]
 }
 ```
 
@@ -234,5 +232,5 @@ The server starts on **[http://localhost:5000](http://localhost:5000)**.
 * **Response**
 
 ```json
-{ "role": "instructor" } // or "student"
+{ "role": "instructor" } 
 ```
