@@ -2,90 +2,90 @@ const Groups = require("../models/groupModel");
 const Users = require('../models/userModel');
 const mongoose = require("mongoose");
 
-const createGroup = async (req,res) => {
-    const {groupname} = req.body;
+const createGroup = async (req, res) => {
+    const { groupname } = req.body;
     const username = req.user.username;
     const id = req.user.id;
 
     // console.log(username, id);
-    if(!groupname || !username || !username.trim() || !groupname.trim() ){
+    if (!groupname || !username || !username.trim() || !groupname.trim()) {
         return res.status(401).json({ message: 'both fields are required' });
     }
     let data
-    try{
+    try {
         data = await Groups.findOne({
-            groupName : groupname
+            groupName: groupname
         });
-    }catch(err){
+    } catch (err) {
         console.log("mongodb operation failed" + err.message);
         return res.status(401).json({ message: 'server error' });
     }
-    if(data){
+    if (data) {
         return res.status(401).json({ message: 'group Name already exists' });
     }
     let accesscode;
-    while(1){
+    while (1) {
         accesscode = (Math.floor(100000 + Math.random() * 900000)).toString();
-        const val = await Groups.findOne({accessCode:accesscode});
-        if(!val)break;
+        const val = await Groups.findOne({ accessCode: accesscode });
+        if (!val) break;
     }
-    try{
+    try {
         const newGroup = await Groups.create({
-            groupName : groupname,
-            faculty : username,
-            facultyId : id,
-            accessCode : accesscode
+            groupName: groupname,
+            faculty: username,
+            facultyId: id,
+            accessCode: accesscode
         });
         await Users.findOneAndUpdate(
-            {username:username},
-            {$push:{created_classes:newGroup._id}}
+            { username: username },
+            { $push: { created_classes: newGroup._id } }
         );
-        return res.status(200).json({message: 'Group created', group: newGroup });
-    }catch(err){
+        return res.status(200).json({ message: 'Group created', group: newGroup });
+    } catch (err) {
         console.log("mongodb operation failed" + err.message);
         return res.status(401).json({ message: 'server error' });
     }
 }
 
 const joinGroup = async (req, res) => {
-  const username = req.user.username;
-  const { accesscode } = req.body;
+    const username = req.user.username;
+    const { accesscode } = req.body;
 
-  if (!username || !accesscode || !accesscode.trim()) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-
-  try {
-    const group = await Groups.findOne({ accessCode: accesscode });
-    if (!group) {
-      return res.status(404).json({ message: 'Group code does not exist' });
+    if (!username || !accesscode || !accesscode.trim()) {
+        return res.status(400).json({ message: 'All fields are required' });
     }
 
-    await Users.findOneAndUpdate(
-      { username },
-      { $addToSet: { joined_classes: group._id } }
-    );
+    try {
+        const group = await Groups.findOne({ accessCode: accesscode });
+        if (!group) {
+            return res.status(404).json({ message: 'Group code does not exist' });
+        }
 
-    return res.status(200).json({ message: 'Joined successfully', groupid: group._id });
-  } catch (err) {
-    console.error("MongoDB operation failed:", err);
-    return res.status(500).json({ message: 'Server error' });
-  }
+        await Users.findOneAndUpdate(
+            { username },
+            { $addToSet: { joined_classes: group._id } }
+        );
+
+        return res.status(200).json({ message: 'Joined successfully', groupid: group._id });
+    } catch (err) {
+        console.error("MongoDB operation failed:", err);
+        return res.status(500).json({ message: 'Server error' });
+    }
 };
 
 const getAllGroups = async (req, res) => {
-  try {
-    const groups = await Groups.find({});
-    if (!groups || groups.length === 0) {
-        return res.status(200).json({ groups: [] });
-    }
-    const sanitizedGroups = groups.map(group => ({
-        id: group._id,
-        groupName: group.groupName,
-        faculty: group.faculty,
-        //   accessCode: group.accessCode,
-        createdAt: group.createdAt,
-        //   questions: group.questions
+    try {
+        const groups = await Groups.find({});
+        if (!groups || groups.length === 0) {
+            return res.status(200).json({ groups: [] });
+        }
+        const sanitizedGroups = groups.map(group => ({
+            id: group._id,
+            groupName: group.groupName,
+            faculty: group.faculty,
+            //   accessCode: group.accessCode,
+            createdAt: group.createdAt,
+            //   questions: group.questions
         }));
 
         return res.status(200).json({ groups: sanitizedGroups });
@@ -95,32 +95,32 @@ const getAllGroups = async (req, res) => {
     }
 };
 
-const userGroups = async (req,res) => {
-    try{
+const userGroups = async (req, res) => {
+    try {
         const user = req.user;
         // console.log(user.username);
         const data = await Users.findOne({
-            username : user.username
+            username: user.username
         });
-        if(!data){
+        if (!data) {
             return res.status(401).json({ message: 'username doesnot exists' });
         }
         res.status(200).json({
-            created_classes : data.created_classes,
-            joined_classes : data.joined_classes
+            created_classes: data.created_classes,
+            joined_classes: data.joined_classes
         });
-    }catch(err){
+    } catch (err) {
         return res.status(401).json({ message: 'server error' });
     }
 }
 
-const getQuestion = async (req,res) => {
-    try{
-        const {groupid} = req.params;
+const getQuestion = async (req, res) => {
+    try {
+        const { groupid } = req.params;
         const data = await Groups.findOne({
-            _id : groupid
+            _id: groupid
         });
-        if(!data){
+        if (!data) {
             return res.status(401).json({ message: 'invalid group id' });
         }
         const user = await Users.findOne({ username: req.user.username });
@@ -129,29 +129,29 @@ const getQuestion = async (req,res) => {
             return res.status(403).json({ message: 'You are not part of this group' });
         }
         res.status(200).json({
-            groupName : data.groupName,
-            faculty : data.faculty,
-            facultyid : data.facultyId,
-            accessCode : data.accessCode,
-            questions : data.questions
+            groupName: data.groupName,
+            faculty: data.faculty,
+            facultyid: data.facultyId,
+            accessCode: data.accessCode,
+            questions: data.questions
         });
-    }catch(err){
+    } catch (err) {
         return res.status(401).json({ message: 'server error' });
     }
 }
 
-const postQuestion = async (req,res) => {
-    try{
-        const {groupid} = req.params;
+const postQuestion = async (req, res) => {
+    try {
+        const { groupid } = req.params;
         const data = await Groups.findOne({
-            _id : groupid
+            _id: groupid
         });
-        if(!data){
+        if (!data) {
             return res.status(401).json({ message: 'invalid group id' });
         }
-        const {question} = req.body;
+        const { question } = req.body;
         const author = req.user.username;
-        if(!question || !author || !question.trim() || !author.trim()){
+        if (!question || !author || !question.trim() || !author.trim()) {
             return res.status(401).json({ message: 'both fields are required' });
         }
         const user = await Users.findOne({ username: author });
@@ -161,36 +161,36 @@ const postQuestion = async (req,res) => {
         }
         const newQuestion = {
             _id: new mongoose.Types.ObjectId(),
-            author : author.trim(),
-            questionText : question.trim(),
-            questionTimestamp : Date.now()
+            author: author.trim(),
+            questionText: question.trim(),
+            questionTimestamp: Date.now()
         }
         await Groups.findOneAndUpdate(
-            {_id : groupid},
-            {$push : {questions : newQuestion}}
+            { _id: groupid },
+            { $push: { questions: newQuestion } }
         );
-        res.status(200).json({ 
+        res.status(200).json({
             message: "Question added successfully",
-            questionid : newQuestion._id
+            questionid: newQuestion._id
         });
-    }catch(err){
+    } catch (err) {
         return res.status(401).json({ message: 'server error' });
     }
 }
 
-const updateQuestion = async (req,res) => {
-    try{
-        const {groupid,questionid} = req.params;
+const updateQuestion = async (req, res) => {
+    try {
+        const { groupid, questionid } = req.params;
         // console.log(groupid, questionid);
         const data = await Groups.findOne({
-            _id : groupid
+            _id: groupid
         });
         // console.log(data);
-        if(!data){
+        if (!data) {
             return res.status(401).json({ message: 'invalid group id' });
         }
-        const {answer,status} = req.body;
-        if(!status){
+        const { answer, status } = req.body;
+        if (!status) {
             return res.status(401).json({ message: 'field are required' });
         }
         const user = await Users.findOne({ username: req.user.username });
@@ -198,11 +198,11 @@ const updateQuestion = async (req,res) => {
         if (!isMember) {
             return res.status(403).json({ message: 'You are not part of this group' });
         }
-        const updatefield = {"questions.$.status": status};
+        const updatefield = { "questions.$.status": status };
         if (answer !== undefined && answer.trim() !== "") {
             updatefield["questions.$.answerText"] = answer;
             updatefield["questions.$.answerTimestamp"] = new Date();
-            updatefield["questions.$.status"] = "answered"; 
+            updatefield["questions.$.status"] = "answered";
         }
         const update = await Groups.findOneAndUpdate(
             { _id: groupid, "questions._id": questionid, "faculty": req.user.username },
@@ -214,21 +214,21 @@ const updateQuestion = async (req,res) => {
         } else {
             return res.status(201).json({ message: "Question updated successfully" });
         }
-    }catch(err){
+    } catch (err) {
         return res.status(401).json({ message: 'server error' });
     }
 }
 
-const deleteQuestion = async (req,res) => {
-    try{
-        const {groupid,questionid} = req.params;
+const deleteQuestion = async (req, res) => {
+    try {
+        const { groupid, questionid } = req.params;
         const data = await Groups.findOne({
-            _id : groupid
+            _id: groupid
         });
-        if(!data){
+        if (!data) {
             return res.status(401).json({ message: 'invalid group id' });
         }
-        if(data.faculty!==req.user.username){
+        if (data.faculty !== req.user.username) {
             return res.status(403).json({ message: 'Only faculty can delete questions' });
         }
         const update = await Groups.findByIdAndUpdate(
@@ -236,73 +236,88 @@ const deleteQuestion = async (req,res) => {
             { $pull: { questions: { _id: questionid } } },
             { new: true }
         );
-        if(!update){
+        if (!update) {
             return res.status(404).json({ message: "Question not found" });
         }
         else return res.status(201).json({ message: "Question deleted succesfully" });
-    }catch(err){
+    } catch (err) {
         return res.status(401).json({ message: 'server error' });
     }
 }
 
-const fetchBasedOnStatus = async (req,res) => {
-    try{
-        const {status} = req.body;
+const fetchBasedOnStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
         const groups = await Groups.find(
-            {status:status}
+            { status: status }
         );
         res.status(201).json({
-            groups:groups
+            groups: groups
         })
-    }catch(err){
+    } catch (err) {
         return res.status(401).json({ message: 'server error' });
     }
 }
 
-const changeStatus = async (req,res) => {
-    try{
-        const {status} = req.body;
-        const {groupid} = req.params;
+const changeStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const { groupid } = req.params;
         const data = await Groups.findOne({
-            _id : groupid
+            _id: groupid
         });
-        if(!data){
+        if (!data) {
             return res.status(401).json({ message: 'invalid group id' });
         }
-        if(data.faculty!==req.user.username){
+        if (data.faculty !== req.user.username) {
             return res.status(403).json({ message: 'Only faculty can change the status' });
         }
         const update = await Groups.findOneAndUpdate(
-            {_id:groupid},
-            {status:status},
-            {new:true}
+            { _id: groupid },
+            { status: status },
+            { new: true }
         );
         res.status(201).json({
-            message : "status changed successfully"
+            message: "status changed successfully"
         })
-    }catch(err){
+    } catch (err) {
         return res.status(401).json({ message: 'server error' });
     }
 }
 
 const getUserRole = async (req, res) => {
-  try {
-    const group = await Groups.findById(req.params.classId);
-    if (!group) return res.status(404).json({ message: "Class not found" });
+    try {
+        const group = await Groups.findById(req.params.classId);
+        if (!group) return res.status(404).json({ message: "Class not found" });
 
-    const userId = req.user.id;
-    const user = await Users.findById(userId);
-    let role = "student";
+        const userId = req.user.id;
+        const user = await Users.findById(userId);
+        let role = "student";
 
-    console.log(userId);
-    console.log(user);
-    if (group.facultyId.toString() === userId) role = "instructor";
-    else if (user.created_classes.includes(req.params.classId)) role = "instructor";
+        console.log(userId);
+        console.log(user);
+        if (group.facultyId.toString() === userId) role = "instructor";
+        else if (user.created_classes.includes(req.params.classId)) role = "instructor";
 
-    res.json({ role });
-  } catch (err) {
-    res.status(500).json({ message: "Server error", error: err.message });
-  }
+        res.json({ role });
+    } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
 }
 
-module.exports = {createGroup, joinGroup, userGroups,getQuestion, postQuestion, updateQuestion, deleteQuestion, getAllGroups, getUserRole, fetchBasedOnStatus, changeStatus};
+const getClassesDetails = async (classIdArray) => {
+    if (!classIdArray || classIdArray.length === 0) return [];
+
+    // Find all groups whose IDs are in the provided array
+    const classes = await Groups.find({
+        _id: { $in: classIdArray }
+    }).select('groupName'); // Only fetch the groupName field
+
+    // Map the results to the structure expected by the frontend
+    return classes.map(cls => ({
+        // Ensure no variable names change:
+        name: cls.groupName || 'Unknown Class'
+    }));
+};
+
+module.exports = { createGroup, joinGroup, userGroups, getQuestion, postQuestion, updateQuestion, deleteQuestion, getAllGroups, getUserRole, fetchBasedOnStatus, changeStatus, getClassesDetails};
