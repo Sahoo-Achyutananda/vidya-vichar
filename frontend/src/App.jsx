@@ -9,7 +9,7 @@ import ClassPage from "./components/ClassPage";
 function App() {
   return (
     <BrowserRouter>
-      <MainLayout />
+        <MainLayout />
     </BrowserRouter>
   );
 }

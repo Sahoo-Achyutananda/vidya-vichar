@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
+import axios from "axios"
 
 function SignupPage() {
   const [name, setName] = useState("");
@@ -7,9 +8,9 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e){
     e.preventDefault();
     if (!name || !email || !password || !confirmPassword) {
       setError("Please fill all fields");
@@ -24,7 +25,11 @@ function SignupPage() {
       return;
     }
     // fake signup
-    navigate("/login");
+
+    const res = await axios.post(`${import.meta.env.VITE_DB_LINK}/api/users/register`,{username : name, email, password}, { withCredentials: true });
+    const resData = res.data;
+    console.log(resData);
+    // navigate("/login");
   };
 
   return (

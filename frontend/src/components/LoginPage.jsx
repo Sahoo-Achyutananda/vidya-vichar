@@ -1,21 +1,46 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserContext } from "../contexts/userContext";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  // using the context i created - 
+  const {setUser} = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e){
     e.preventDefault();
     if (!email || !password) {
       setError("Please fill in both fields");
       return;
     }
-    // fake login
-    navigate("/user/dashboard");
-  };
+
+    try {
+      // Login — backend sets the cookie
+      await axios.post(
+        `${import.meta.env.VITE_DB_LINK}/api/users/login`,
+        { email, password },
+        { withCredentials: true }
+      );
+
+      // Fetch user profile
+      const profileRes = await axios.get(
+        `${import.meta.env.VITE_DB_LINK}/api/users/profile`,
+        { withCredentials: true }
+      );
+
+      setUser(profileRes.data);
+      console.log(profileRes.data); // debug
+      navigate("/user/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    }
+  }
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-cyan-100 to-green-100 font-sans">
