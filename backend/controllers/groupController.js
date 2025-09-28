@@ -285,4 +285,24 @@ const changeStatus = async (req,res) => {
     }
 }
 
-module.exports = {createGroup, joinGroup, userGroups,getQuestion, postQuestion, updateQuestion, deleteQuestion, getAllGroups, fetchBasedOnStatus, changeStatus};
+const getUserRole = async (req, res) => {
+  try {
+    const group = await Groups.findById(req.params.classId);
+    if (!group) return res.status(404).json({ message: "Class not found" });
+
+    const userId = req.user.id;
+    const user = await Users.findById(userId);
+    let role = "student";
+
+    console.log(userId);
+    console.log(user);
+    if (group.facultyId.toString() === userId) role = "instructor";
+    else if (user.created_classes.includes(req.params.classId)) role = "instructor";
+
+    res.json({ role });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+}
+
+module.exports = {createGroup, joinGroup, userGroups,getQuestion, postQuestion, updateQuestion, deleteQuestion, getAllGroups, getUserRole, fetchBasedOnStatus, changeStatus};
