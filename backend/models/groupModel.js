@@ -49,6 +49,11 @@ const groupSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  status : {
+    type: String,
+    enum: ["ongoing", "completed"],
+    default: "ongoing"
+  },
   questions : [questionSchema]
 });
 

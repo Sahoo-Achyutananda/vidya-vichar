@@ -7,7 +7,7 @@ const createGroup = async (req,res) => {
     const username = req.user.username;
     const id = req.user.id;
 
-    console.log(username, id);
+    // console.log(username, id);
     if(!groupname || !username || !username.trim() || !groupname.trim() ){
         return res.status(401).json({ message: 'both fields are required' });
     }
@@ -245,4 +245,44 @@ const deleteQuestion = async (req,res) => {
     }
 }
 
-module.exports = {createGroup, joinGroup, userGroups,getQuestion, postQuestion, updateQuestion, deleteQuestion, getAllGroups};
+const fetchBasedOnStatus = async (req,res) => {
+    try{
+        const {status} = req.body;
+        const groups = await Groups.find(
+            {status:status}
+        );
+        res.status(201).json({
+            groups:groups
+        })
+    }catch(err){
+        return res.status(401).json({ message: 'server error' });
+    }
+}
+
+const changeStatus = async (req,res) => {
+    try{
+        const {status} = req.body;
+        const {groupid} = req.params;
+        const data = await Groups.findOne({
+            _id : groupid
+        });
+        if(!data){
+            return res.status(401).json({ message: 'invalid group id' });
+        }
+        if(data.faculty!==req.user.username){
+            return res.status(403).json({ message: 'Only faculty can change the status' });
+        }
+        const update = await Groups.findOneAndUpdate(
+            {_id:groupid},
+            {status:status},
+            {new:true}
+        );
+        res.status(201).json({
+            message : "status changed successfully"
+        })
+    }catch(err){
+        return res.status(401).json({ message: 'server error' });
+    }
+}
+
+module.exports = {createGroup, joinGroup, userGroups,getQuestion, postQuestion, updateQuestion, deleteQuestion, getAllGroups, fetchBasedOnStatus, changeStatus};
