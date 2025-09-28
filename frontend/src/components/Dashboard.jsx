@@ -5,6 +5,7 @@ import CreateSuccessModal from './CreateSuccessModal.jsx';
 import { UserContext } from "../contexts/userContext.jsx";
 import axios from "axios";
 
+
 function HeroSection({fetchClasses}){
   const navigate = useNavigate();
   // get user details - 
@@ -19,30 +20,53 @@ function HeroSection({fetchClasses}){
   const [showModal,setShowModal]=useState(false);
 
 
-  // Modals i think - 
   // state to store new group info
   const [newGroupName,setNewGroupName]=useState("");
   const [newAccessCode,setNewAccessCode]=useState("");
 
-  // new function to handle the creation logic and show the modal
+  // creation logic and show the modal
   async function handleCreateClass(){
     if(createName.trim()===""){
       alert("Please enter a group name.");
       return;
     }
-    const res = await axios.post(`${import.meta.env.VITE_DB_LINK}/api/groups/create`, {username : user.username,  groupname : createName }, {withCredentials : true});
-    console.log(res.data);
-    console.log("dashboard suer", user);
+    
+    try {
+        const res = await axios.post(
+            `${import.meta.env.VITE_DB_LINK}/api/groups/create`, 
+            {username : user.username, groupname : createName }, 
+            {withCredentials : true}
+        );
 
-    const mockCode=Math.floor(10000+Math.random()*90000); // 5-digit mock code
-    // save the mock data to state and show the modal
-    setNewGroupName(createName.trim());
-    setNewAccessCode(mockCode.toString());
-    setShowModal(true);
-    setCreateName("");
-    fetchClasses();
+       
+        if (res.data && res.data.group && res.data.group.accessCode) {
+            // real data from the successful response
+            const realGroupName = res.data.group.groupName;
+            const realAccessCode = res.data.group.accessCode; 
+
+            // Save the real 
+            setNewGroupName(realGroupName);
+            setNewAccessCode(realAccessCode);
+            setShowModal(true);
+            setCreateName("");
+            fetchClasses();
+            
+        } else {
+            //case where server responds successfully but data is missing
+            alert("Class created, but access code was not returned by the server.");
+            setCreateName("");
+            fetchClasses();
+        }
+
+    } catch (err) {
+      // error responses from the server
+      const errorMessage = err.response?.data?.message || "Failed to create class. Check server connection.";
+      alert(errorMessage);
+    }
   };
 
+  // Function to handle joining an existing class
+ 
   async function handleJoinClass() {
     try {
       const res = await axios.post(
@@ -50,7 +74,7 @@ function HeroSection({fetchClasses}){
         { username: user.username, accesscode: accessCode },
         { withCredentials: true }
       );
-      // console.log(res.data);
+      
       alert("Successfully joined the class!");
       navigate(`/groups/${res.data.groupid}`);
     } catch (err) {
