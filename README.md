@@ -1,4 +1,15 @@
 ````markdown
+# Assumption
+
+1. Everytime there is a new question or any changes in the group all the group members should refresh.
+2. Username,email,groupname are unique
+3. You cant enter into a group if you are not part of it
+4. students has only access to post questions, other operations can only be done by faculty
+5. a user can be faculty in one group and a student in another group
+6. each group has exactly one faculty
+7. joining a group requires valid access code
+8. It is the responsibility of the teacher to share the access code once it a group is created.
+
 # 📌 Backend – Vidya Vichar
 
 The backend is built with Node.js, Express, MongoDB (Mongoose) and runs on port 5000.  

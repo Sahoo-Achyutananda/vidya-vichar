@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useParams } from "react-router-dom";
 import { useEffect, useContext, useState } from "react";
-import { Users, MessageCircle, Check, X, Clock, Plus, BookOpen, User, Calendar, Star, StarOff } from "lucide-react";
+import { Users, MessageCircle, Check, X, Clock, Plus, BookOpen, User, Calendar, Star, StarOff, CodeXml } from "lucide-react";
 
 import axios from "axios"
 import { UserContext } from "../contexts/userContext";
@@ -230,9 +230,14 @@ function ClassInfo({ classInfo, userRole, question, handleAskQuestion , setQuest
             <div className="flex flex-wrap gap-6 text-purple-200">
               <div className="flex items-center">
                 <User className="w-5 h-5 mr-2" />
-                <span>{classInfo.faculty}</span>
+                <span className="font-bold"> Faculty : {classInfo.faculty}</span>
               </div>
-              
+            </div>
+             <div className="flex flex-wrap gap-6 text-purple-200">
+              <div className="flex items-center">
+                <CodeXml className="w-5 h-5 mr-2" />
+                <span className="font-bold"> Access Code : {classInfo.accessCode}</span>
+              </div>
             </div>
           </div>
           
