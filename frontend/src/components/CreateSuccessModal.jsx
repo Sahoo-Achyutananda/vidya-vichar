@@ -27,16 +27,16 @@ function CreateSuccessModal({ groupName, accessCode, onClose }) {
         </div>
         {/* access code display with copy button */}
        {/* access code display with copy button */}
-<div className="bg-gray-100 p-3 rounded-lg text-gray-800 mb-6 text-lg font-medium flex items-center justify-between">
-  {/* access code centered */}
-  <div className="flex-1 flex justify-center">
-    <span className="text-blue-700 font-bold text-2xl" >{accessCode}</span>
-  </div>
-  {/* copy button at the far right */}
-  <button onClick={handleCopy} className="ml-4 p-2 rounded-lg bg-white hover:bg-gray-200 transition-colors duration-200" title="copy access code">
-    <Copy className="w-5 h-5 text-gray-800"/>
-  </button>
-</div>
+      <div className="bg-gray-100 p-3 rounded-lg text-gray-800 mb-6 text-lg font-medium flex items-center justify-between">
+        {/* access code centered */}
+        <div className="flex-1 flex justify-center">
+          <span className="text-blue-700 font-bold text-2xl" >{accessCode}</span>
+        </div>
+        {/* copy button at the far right */}
+        <button onClick={handleCopy} className="ml-4 p-2 rounded-lg bg-white hover:bg-gray-200 transition-colors duration-200" title="copy access code">
+          <Copy className="w-5 h-5 text-gray-800"/>
+        </button>
+      </div>
 
         {/* close button */}
         <button onClick={onClose} className="w-full bg-gradient-to-r from-purple-600 to-fuchsia-700 hover:from-purple-700 hover:to-fuchsia-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg">

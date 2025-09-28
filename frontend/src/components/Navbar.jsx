@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom'; 
+import { UserContext } from '../contexts/userContext';
 
 import { CircleUserRound, GraduationCap } from 'lucide-react'; 
 
+
 function Navbar() {
   const navigate = useNavigate();
+  const {setUser} = useContext(UserContext);
 
   // logout handler
   const handleLogout = () => {
-    console.log("user logging out"); 
-    navigate('/login'); // go to login
+    setUser(null); // Clear the user context
+    navigate('/login', { replace: true }); // redirect to login
   };
+
   
   // go to profile page
   const handleProfileClick = () => {
@@ -31,13 +35,13 @@ function Navbar() {
         >
           
           <GraduationCap 
-            className="h-7 w-7 mr-2 text-cyan-600" 
+            className="h-7 w-7 mr-2 text-black-600" 
             strokeWidth={2.5} 
           />
           
        
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-cyan-600">
-            
+          <span className="text-black font-bold">
+              Vidya Vichar
           </span>
         </div>
         
@@ -50,7 +54,7 @@ function Navbar() {
             className="text-gray-600 hover:text-gray-800 transition-colors duration-300 p-1 rounded-full focus:outline-none focus:ring-4 focus:ring-gray-300 focus:ring-opacity-50"
             title="Profile"
           >
-            <CircleUserRound className="h-6 w-6" /> 
+            <CircleUserRound className="h-6 w-6" />
           </button>
           
           {/* logout button */}

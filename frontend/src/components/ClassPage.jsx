@@ -5,6 +5,7 @@ import { Users, MessageCircle, Check, X, Clock, Plus, BookOpen, User, Calendar, 
 
 import axios from "axios"
 import { UserContext } from "../contexts/userContext";
+import GoBackButton from "./GoBackButton";
 
 function ClassPage() {
   const {classId} = useParams();
@@ -189,8 +190,9 @@ function ClassPage() {
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <X className="w-8 h-8 text-red-500" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">Class Not Found</h3>
-          <p className="text-gray-600">The requested class could not be loaded.</p>
+          {/* <h3 className="text-xl font-semibold text-gray-900 mb-2">Class Not Found</h3> */}
+          <p className="text-gray-600">The requested class could not be loaded. Access Code Needed</p>
+          <GoBackButton/>
         </div>
       </div>
     );
@@ -341,16 +343,6 @@ function QuestionsSection({ questions, userRole,question, onMarkAnswered, onMark
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
             {filter === "all" ? "No Questions Yet" : `No ${filter} Questions`}
           </h3>
-          <p className="text-gray-600 mb-6">
-            {filter === "all" 
-              ? "Be the first to ask a question and start the discussion" 
-              : `No questions match the ${filter} filter`
-            }
-          </p>
-          <button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105">
-            <Plus className="w-5 h-5 inline mr-2" />
-            Ask First Question
-          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -384,6 +376,7 @@ function Question({id, ques, userRole, onMarkAnswered, onMarkUnanswered, onHandl
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
+            <>
             <div className="flex items-center space-x-2 mb-2">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                 isAnswered 
@@ -402,9 +395,25 @@ function Question({id, ques, userRole, onMarkAnswered, onMarkUnanswered, onHandl
                   </>
                 )}
               </span>
+              <span className={` ${
+                isImportant 
+                  ? 'bg-green-100 text-green-800 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium' 
+                  : ''
+              }`}>
+                {isImportant ? (
+                  <>
+                    <Check className="w-3 h-3 mr-1" />
+                    Important
+                  </>
+                ) : (
+                  <>
+
+                  </>
+                )}
+              </span>
               <span className="text-xs text-gray-500">{new Date(ques.questionTimestamp).toLocaleString()}</span>
             </div>
-            
+            </>
             <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-300 line-clamp-3">
               {ques.questionText}
             </h3>

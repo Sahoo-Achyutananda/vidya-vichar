@@ -147,6 +147,8 @@ function ClassNav({ activeTab, setActiveTab }) {
         >
           Active Classes
         </div>
+        {/*
+        for future use - couldnt do due to time constraints !
         <div
           className={activeTab === "completed" ? activeNavStyle : navStyle}
           onClick={() => setActiveTab("completed")}
@@ -164,7 +166,7 @@ function ClassNav({ activeTab, setActiveTab }) {
           onClick={() => setActiveTab("joined")}
         >
           Joined Classes
-        </div>
+        </div> */}
       </div>
     </>
   );
