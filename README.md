@@ -22,6 +22,17 @@ It handles user authentication, group management, and Q&A features.
 cd backend
 npm install
 npm run dev
+
+# 📌 Frontend – Vidya Vichar
+
+The frontend is built with React and runs on port 5000.  
+APIs are handled using axios
+
+
+## 🚀 Setup & Run
+cd frontend
+npm install
+npm run dev
 ````
 
 The server starts on **[http://localhost:5000](http://localhost:5000)**.
