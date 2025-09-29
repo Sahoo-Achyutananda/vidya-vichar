@@ -1,4 +1,5 @@
 ### Github Link : [https://github.com/Sahoo-Achyutananda/vidya-vichar/tree/test]
+
 # Assumption
 
 1. Everytime there is a new question or any changes in the group all the group members should refresh.
@@ -23,6 +24,22 @@ npm install
 npm run dev
 ```
 
+## .env for the backend - 
+```bash
+# 1. Server Configuration
+PORT=5000
+NODE_ENV=development
+
+# 2. MongoDB Connection
+MONGO_URI=mongodb+srv://dbuser1:pass1@cluster0.s2rqysk.mongodb.net/vidhya-vichar-database
+
+# 3. JSON Web Token Secret
+JWT_SECRET=1234567890
+
+# 4. Frontend URL for CORS (matching the origin in your server.js)
+CLIENT_URL=http://localhost:5173
+```
+
 # 📌 Frontend – Vidya Vichar
 
 The frontend is built with React and runs on port 5000.  
@@ -34,6 +51,11 @@ APIs are handled using axios
 cd frontend
 npm install
 npm run dev
+```
+
+## .env for the frontend - 
+```bash
+VITE_DB_LINK=http://localhost:5000
 ```
 
 The server starts on **[http://localhost:5173](http://localhost:5173)**.
